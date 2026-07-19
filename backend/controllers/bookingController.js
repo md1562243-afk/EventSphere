@@ -50,7 +50,7 @@ exports.requestCustomEvent = async (req, res, next) => {
     if (missing.length) {
       return res.status(400).json({ success: false, message: `Missing fields: ${missing.join(', ')}` });
     }
-    const { event_type, event_date, event_time, venue, expected_attendees, special_notes, payment_method, estimated_budget, payment_plan } = req.body;
+    const { event_date, event_time, venue, payment_method, estimated_budget, payment_plan } = req.body;
 
     paymentService.assertValidMethod(payment_method);
     if (!isFutureDate(event_date)) {
@@ -64,16 +64,12 @@ exports.requestCustomEvent = async (req, res, next) => {
     }
 
     const budget = Number(estimated_budget);
-    const noteParts = [`[${event_type}]`];
-    if (expected_attendees) noteParts.push(`Attendance: ${expected_attendees}`);
-    if (special_notes) noteParts.push(special_notes);
 
     const booking_id = await Booking.create({
       event_id: null,
       event_date,
       event_time,
       event_venue: venue,
-      special_notes: noteParts.join(' '),
       user_id: req.auth.user_id
     });
 

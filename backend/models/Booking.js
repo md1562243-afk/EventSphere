@@ -2,11 +2,11 @@ const pool = require('../config/database');
 
 const Booking = {
   async create(data) {
-    const { event_id, event_date, event_time, event_venue, special_notes, user_id } = data;
+    const { event_id, event_date, event_time, event_venue, user_id } = data;
     const [result] = await pool.query(
-      `INSERT INTO Booking (event_id, event_date, event_time, event_venue, special_notes, user_id, booking_status)
-       VALUES (?, ?, ?, ?, ?, ?, 'Pending')`,
-      [event_id || null, event_date, event_time, event_venue, special_notes || null, user_id]
+      `INSERT INTO Booking (event_id, event_date, event_time, event_venue, user_id, booking_status)
+       VALUES (?, ?, ?, ?, ?, 'Pending')`,
+      [event_id || null, event_date, event_time, event_venue, user_id]
     );
     return result.insertId;
   },
