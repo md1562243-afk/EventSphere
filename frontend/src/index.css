@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-bgapp text-body font-sans antialiased overflow-x-hidden;
+}
+
+h1, h2, h3, h4 {
+  @apply text-heading font-bold;
+}
+
+.container-app {
+  @apply mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-10;
+}
+
+.btn-primary {
+  @apply bg-primary text-white font-semibold rounded-btn px-6 py-3 transition duration-250 hover:shadow-soft hover:-translate-y-0.5 active:translate-y-0;
+}
+
+.btn-accent {
+  @apply bg-accent text-heading font-semibold rounded-btn px-6 py-3 transition duration-250 hover:shadow-soft hover:-translate-y-0.5 active:translate-y-0;
+}
+
+.btn-outline {
+  @apply border border-primary text-primary font-semibold rounded-btn px-6 py-3 transition duration-250 hover:bg-primary hover:text-white;
+}
+
+.card {
+  @apply bg-surface rounded-card shadow-soft transition duration-250;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.input-field {
+  @apply w-full rounded-input border border-slate-200 px-4 py-3 text-sm text-heading placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition duration-250;
+}
+
+.badge {
+  @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #c7d2fe;
+  border-radius: 999px;
+}
