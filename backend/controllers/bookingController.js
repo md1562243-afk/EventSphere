@@ -76,11 +76,10 @@ exports.requestCustomEvent = async (req, res, next) => {
     if (payment_plan === 'Full') {
       await Payment.create({ payment_method, payment_amount: budget, booking_id });
     } else {
-      // Advance: 50% due now, 50% due after the event — represented as two Payment rows
-      // (Booking → Payment is already a one-to-many relationship), no schema change needed.
+      // Advance: only the 50% due now is recorded. The remaining 50% is only
+      // created later, when the user actually submits it via payRemaining below.
       const half = Math.round((budget / 2) * 100) / 100;
       await Payment.create({ payment_method, payment_amount: half, booking_id });
-      await Payment.create({ payment_method, payment_amount: budget - half, booking_id });
     }
 
     res.status(201).json({ success: true, message: 'Custom event request submitted', booking_id });
@@ -96,6 +95,44 @@ exports.myBookings = async (req, res, next) => {
       bookings.map(async (b) => ({ ...b, ...(await Payment.paidAndDue(b.booking_id)) }))
     );
     res.json({ success: true, bookings: withPayments });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Submits the remaining balance for a custom event booking that was paid in two
+// installments. Only allowed once: after the first (advance) payment exists and
+// is Confirmed, and before a second payment has already been submitted.
+exports.payRemaining = async (req, res, next) => {
+  try {
+    const { payment_method } = req.body;
+    if (!payment_method) {
+      return res.status(400).json({ success: false, message: 'payment_method is required' });
+    }
+    paymentService.assertValidMethod(payment_method);
+
+    const booking = await Booking.findById(req.params.id);
+    if (!booking) return res.status(404).json({ success: false, message: 'Booking not found' });
+    if (booking.user_id !== req.auth.user_id) {
+      return res.status(403).json({ success: false, message: 'You can only pay for your own bookings' });
+    }
+
+    const payments = await Payment.byBooking(req.params.id);
+    if (payments.length === 0) {
+      return res.status(400).json({ success: false, message: 'No advance payment found for this booking' });
+    }
+    if (payments.length >= 2) {
+      return res.status(400).json({ success: false, message: 'The remaining balance has already been submitted' });
+    }
+    if (payments[0].payment_status !== 'Confirmed') {
+      return res.status(400).json({ success: false, message: 'Your advance payment must be confirmed before paying the remaining balance' });
+    }
+
+    // Even 50/50 split, so the remaining amount matches what was already paid.
+    const remaining_amount = payments[0].payment_amount;
+    const payment_id = await Payment.create({ payment_method, payment_amount: remaining_amount, booking_id: req.params.id });
+
+    res.status(201).json({ success: true, message: 'Remaining balance submitted. Awaiting admin verification.', payment_id });
   } catch (err) {
     next(err);
   }

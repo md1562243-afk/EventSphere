@@ -22,6 +22,7 @@ router.post('/bookings', auth, verifyUser, bookingController.bookEvent);
 router.post('/bookings/custom', auth, verifyUser, bookingController.requestCustomEvent);
 router.get('/bookings', auth, verifyUser, bookingController.myBookings);
 router.put('/bookings/:id/cancel', auth, verifyUser, bookingController.cancel);
+router.post('/bookings/:id/pay-remaining', auth, verifyUser, bookingController.payRemaining);
 
 router.get('/payments', auth, verifyUser, paymentController.myPayments);
 
