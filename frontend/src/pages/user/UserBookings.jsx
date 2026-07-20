@@ -42,6 +42,11 @@ export default function UserBookings() {
   // Confirmed payment there already covers everything.
   const canPayRemaining = (b) => !b.event_id && Number(b.paid) > 0 && Number(b.due) === 0 && b.booking_status === 'Confirmed';
 
+  // The other side of the same state: an advance was requested and is sitting
+  // Pending, waiting on the admin to confirm it before the remaining-balance
+  // option can appear.
+  const awaitingAdvanceConfirmation = (b) => !b.event_id && Number(b.paid) === 0 && Number(b.due) > 0 && b.booking_status === 'Pending';
+
   return (
     <DashboardLayout title="Booking History" links={links}>
       <div className="card overflow-hidden">
