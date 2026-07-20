@@ -70,7 +70,12 @@ export default function UserBookings() {
                   <td className="py-3 px-4">{b.event_name || `Custom · ${b.event_type || ''}`}</td>
                   <td className="py-3 px-4">{b.event_date}</td>
                   <td className="py-3 px-4">{b.event_venue}</td>
-                  <td className="py-3 px-4">৳{Number(b.paid).toLocaleString()} / ৳{Number(b.due).toLocaleString()}</td>
+                  <td className="py-3 px-4">
+                    ৳{Number(b.paid).toLocaleString()} / ৳{Number(b.due).toLocaleString()}
+                    {awaitingAdvanceConfirmation(b) && (
+                      <p className="text-xs text-pendingc mt-0.5">Awaiting admin confirmation</p>
+                    )}
+                  </td>
                   <td className="py-3 px-4"><StatusBadge status={b.booking_status} /></td>
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-3">
