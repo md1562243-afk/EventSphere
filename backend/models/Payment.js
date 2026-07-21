@@ -1,11 +1,11 @@
 const pool = require('../config/database');
 
 const Payment = {
-  async create({ payment_method, payment_amount, booking_id }) {
+  async create({ payment_method, payment_amount, booking_id, payment_plan = 'Full' }) {
     const [result] = await pool.query(
-      `INSERT INTO Payment (payment_date, payment_time, payment_method, payment_status, payment_amount, booking_id)
-       VALUES (CURDATE(), CURTIME(), ?, 'Pending', ?, ?)`,
-      [payment_method, payment_amount, booking_id]
+      `INSERT INTO Payment (payment_date, payment_time, payment_method, payment_plan, payment_status, payment_amount, booking_id)
+       VALUES (CURDATE(), CURTIME(), ?, ?, 'Pending', ?, ?)`,
+      [payment_method, payment_plan, payment_amount, booking_id]
     );
     return result.insertId;
   },
@@ -27,17 +27,20 @@ const Payment = {
     return rows;
   },
 
-  // Amount confirmed vs still pending for a booking — computed purely from existing Payment rows,
-  // which is how the advance/remaining-due split is represented (no extra columns needed).
+  // Amount confirmed vs still outstanding for a booking, computed exactly using
+  // payment_plan: for Advance, the true total is always 2x the first row's amount
+  // (an even 50/50 split), so "due" is knowable even before the second row exists.
   async paidAndDue(booking_id) {
-    const [rows] = await pool.query(
-      `SELECT
-         COALESCE(SUM(CASE WHEN payment_status = 'Confirmed' THEN payment_amount ELSE 0 END), 0) AS paid,
-         COALESCE(SUM(CASE WHEN payment_status = 'Pending' THEN payment_amount ELSE 0 END), 0) AS due
-       FROM Payment WHERE booking_id = ?`,
-      [booking_id]
-    );
-    return rows[0];
+    const rows = await this.byBooking(booking_id);
+    if (rows.length === 0) {
+      return { paid: 0, due: 0, plan: null, payment_count: 0 };
+    }
+    const plan = rows[0].payment_plan;
+    const paid = rows
+      .filter((r) => r.payment_status === 'Confirmed')
+      .reduce((sum, r) => sum + Number(r.payment_amount), 0);
+    const total = plan === 'Advance' ? Number(rows[0].payment_amount) * 2 : Number(rows[0].payment_amount);
+    return { paid, due: total - paid, plan, payment_count: rows.length };
   },
 
   async byUser(user_id) {
