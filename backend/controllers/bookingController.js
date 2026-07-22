@@ -28,7 +28,7 @@ exports.bookEvent = async (req, res, next) => {
       user_id: req.auth.user_id
     });
 
-    await Payment.create({ payment_method, payment_amount: event.ticket_price, booking_id, payment_plan: 'Full' });
+    await Payment.create({ payment_method, payment_amount: event.ticket_price, booking_id });
 
     res.status(201).json({
       success: true,
@@ -74,12 +74,12 @@ exports.requestCustomEvent = async (req, res, next) => {
     });
 
     if (payment_plan === 'Full') {
-      await Payment.create({ payment_method, payment_amount: budget, booking_id, payment_plan: 'Full' });
+      await Payment.create({ payment_method, payment_amount: budget, booking_id });
     } else {
       // Advance: only the 50% due now is recorded. The remaining 50% is only
       // created later, when the user actually submits it via payRemaining below.
       const half = Math.round((budget / 2) * 100) / 100;
-      await Payment.create({ payment_method, payment_amount: half, booking_id, payment_plan: 'Advance' });
+      await Payment.create({ payment_method, payment_amount: half, booking_id });
     }
 
     res.status(201).json({ success: true, message: 'Custom event request submitted', booking_id });
