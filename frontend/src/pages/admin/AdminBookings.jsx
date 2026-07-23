@@ -81,6 +81,7 @@ export default function AdminBookings() {
                 <th className="py-3 px-4">Date / Time</th>
                 <th className="py-3 px-4">Venue</th>
                 <th className="py-3 px-4">Status</th>
+                <th className="py-3 px-4">Total Cost</th>
                 <th className="py-3 px-4">Paid / Due</th>
                 <th className="py-3 px-4"></th>
               </tr>
@@ -94,6 +95,7 @@ export default function AdminBookings() {
                   <td className="py-3 px-4">{b.event_date} {b.event_time}</td>
                   <td className="py-3 px-4">{b.event_venue}</td>
                   <td className="py-3 px-4"><StatusBadge status={b.booking_status} /></td>
+                  <td className="py-3 px-4">৳{(Number(b.paid) + Number(b.due)).toLocaleString()}</td>
                   <td className="py-3 px-4">৳{Number(b.paid).toLocaleString()} / ৳{Number(b.due).toLocaleString()}</td>
                   <td className="py-3 px-4">
                     {!b.event_id && (
