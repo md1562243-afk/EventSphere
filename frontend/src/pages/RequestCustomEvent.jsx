@@ -14,13 +14,11 @@ const EVENT_TYPES = [
 export default function RequestCustomEvent() {
   const { isAuthenticated, role } = useAuth();
   const navigate = useNavigate();
-  const { register, handleSubmit, control, formState: { errors } } = useForm({ defaultValues: { payment_plan: 'Full' } });
+  const { register, handleSubmit, control, formState: { errors } } = useForm();
   const [message, setMessage] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
   const budget = useWatch({ control, name: 'estimated_budget' });
-  const plan = useWatch({ control, name: 'payment_plan' });
-  const half = budget ? Math.round((Number(budget) / 2) * 100) / 100 : 0;
 
   const onSubmit = async (data) => {
     if (!isAuthenticated || role !== 'User') {
@@ -93,28 +91,11 @@ export default function RequestCustomEvent() {
           </select>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-heading mb-2">Payment Plan</label>
-          <div className="grid sm:grid-cols-2 gap-3">
-            <label className={`card p-4 cursor-pointer border-2 ${plan === 'Full' ? 'border-primary' : 'border-transparent'}`}>
-              <input type="radio" value="Full" className="mr-2" {...register('payment_plan')} />
-              <span className="font-semibold">Full Payment</span>
-              <p className="text-xs text-body mt-1">Pay the complete amount now.</p>
-            </label>
-            <label className={`card p-4 cursor-pointer border-2 ${plan === 'Advance' ? 'border-primary' : 'border-transparent'}`}>
-              <input type="radio" value="Advance" className="mr-2" {...register('payment_plan')} />
-              <span className="font-semibold">Advance Payment (50%)</span>
-              <p className="text-xs text-body mt-1">Pay half now, the rest after the event.</p>
-            </label>
-          </div>
-          {budget > 0 && (
-            <p className="text-sm text-body mt-3">
-              {plan === 'Advance'
-                ? `You'll pay ৳${half.toLocaleString()} now, and ৳${half.toLocaleString()} after the event is completed.`
-                : `You'll pay the full ৳${Number(budget).toLocaleString()} now.`}
-            </p>
-          )}
-        </div>
+        {budget > 0 && (
+          <p className="text-sm text-body">
+            You'll pay the full ৳{Number(budget).toLocaleString()} now.
+          </p>
+        )}
 
         {message && (
           <p className={`text-sm ${message.type === 'error' ? 'text-errorc' : 'text-success'}`}>{message.text}</p>
