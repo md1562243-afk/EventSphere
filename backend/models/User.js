@@ -1,4 +1,5 @@
 const pool = require('../config/database');
+const Admin = require('./Admin');
 
 const User = {
   async findByEmail(email) {
@@ -11,10 +12,15 @@ const User = {
     return rows[0];
   },
 
-  async create({ first_name, last_name, email, hashedPassword }) {
+  async create({ first_name, last_name, email, hashedPassword, admin_id }) {
+    if (!admin_id) {
+      const defaultAdmin = await Admin.findFirst();
+      admin_id = defaultAdmin ? defaultAdmin.admin_id : null;
+    }
+
     const [result] = await pool.query(
-      'INSERT INTO User (first_name, last_name, email, password) VALUES (?, ?, ?, ?)',
-      [first_name, last_name, email, hashedPassword]
+      'INSERT INTO User (first_name, last_name, email, password, admin_id) VALUES (?, ?, ?, ?, ?)',
+      [first_name, last_name, email, hashedPassword, admin_id]
     );
     return result.insertId;
   },

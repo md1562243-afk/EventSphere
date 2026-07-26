@@ -11,6 +11,11 @@ const Admin = {
     return rows[0];
   },
 
+  async findFirst() {
+    const [rows] = await pool.query('SELECT admin_id FROM Admin ORDER BY admin_id ASC LIMIT 1');
+    return rows[0];
+  },
+
   async all() {
     const [rows] = await pool.query('SELECT admin_id, first_name, last_name, email FROM Admin');
     return rows;
