@@ -11,20 +11,8 @@ const Admin = {
     return rows[0];
   },
 
-  async findLeastLoaded() {
-    const [rows] = await pool.query(
-      `SELECT a.admin_id
-       FROM Admin a
-       LEFT JOIN User u ON u.admin_id = a.admin_id
-       GROUP BY a.admin_id
-       ORDER BY COUNT(u.user_id) ASC
-       LIMIT 1`
-    );
-    return rows[0];
-  },
-
   async all() {
-    const [rows] = await pool.query('SELECT admin_id, first_name, last_name, email FROM Admin');
+    const [rows] = await pool.query('SELECT admin_id, first_name, last_name, email FROM Admin ORDER BY admin_id ASC');
     return rows;
   },
 

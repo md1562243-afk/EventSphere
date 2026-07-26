@@ -14,8 +14,12 @@ const User = {
 
   async create({ first_name, last_name, email, hashedPassword, admin_id }) {
     if (!admin_id) {
-      const chosenAdmin = await Admin.findLeastLoaded();
-      admin_id = chosenAdmin ? chosenAdmin.admin_id : null;
+      const admins = await Admin.all();
+      if (admins.length) {
+        const [[{ total }]] = await pool.query('SELECT COUNT(*) AS total FROM User');
+        const index = total % admins.length;
+        admin_id = admins[index].admin_id;
+      }
     }
 
     const [result] = await pool.query(
