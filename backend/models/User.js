@@ -14,8 +14,8 @@ const User = {
 
   async create({ first_name, last_name, email, hashedPassword, admin_id }) {
     if (!admin_id) {
-      const defaultAdmin = await Admin.findFirst();
-      admin_id = defaultAdmin ? defaultAdmin.admin_id : null;
+      const chosenAdmin = await Admin.findLeastLoaded();
+      admin_id = chosenAdmin ? chosenAdmin.admin_id : null;
     }
 
     const [result] = await pool.query(
