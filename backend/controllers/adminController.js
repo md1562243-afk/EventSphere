@@ -37,6 +37,32 @@ exports.login = async (req, res, next) => {
   }
 };
 
+exports.createAdmin = async (req, res, next) => {
+  try {
+    const { first_name, last_name, email, password } = req.body;
+
+    if (!first_name || !last_name || !email || !password) {
+      return res.status(400).json({ success: false, message: 'All fields are required' });
+    }
+
+    const existing = await Admin.findByEmail(email);
+    if (existing) {
+      return res.status(409).json({ success: false, message: 'An admin with this email already exists' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const admin_id = await Admin.create({ first_name, last_name, email, hashedPassword });
+
+    res.status(201).json({
+      success: true,
+      message: 'Admin created successfully',
+      admin: { admin_id, first_name, last_name, email }
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 // ---------- Organizers ----------
 exports.listOrganizers = async (req, res, next) => {
   try {

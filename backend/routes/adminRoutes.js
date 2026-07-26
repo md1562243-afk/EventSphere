@@ -12,6 +12,9 @@ router.use(auth, verifyAdmin);
 
 router.get('/dashboard', adminController.dashboard);
 
+// Only an existing admin can create another admin
+router.post('/admins', adminController.createAdmin);
+
 router.get('/organizers', adminController.listOrganizers);
 router.put('/organizers/:id/approve', adminController.approveOrganizer);
 router.put('/organizers/:id/reject', adminController.rejectOrganizer);
