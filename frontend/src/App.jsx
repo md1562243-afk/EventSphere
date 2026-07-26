@@ -37,6 +37,7 @@ import AdminUsers from './pages/admin/AdminUsers';
 import AdminEvents from './pages/admin/AdminEvents';
 import AdminBookings from './pages/admin/AdminBookings';
 import AdminPayments from './pages/admin/AdminPayments';
+import AdminCreateAdmin from './pages/admin/AdminCreateAdmin';
 
 export default function App() {
   return (
@@ -60,6 +61,7 @@ export default function App() {
       <Route path="/admin/events" element={<ProtectedRoute role="Admin"><AdminEvents /></ProtectedRoute>} />
       <Route path="/admin/bookings" element={<ProtectedRoute role="Admin"><AdminBookings /></ProtectedRoute>} />
       <Route path="/admin/payments" element={<ProtectedRoute role="Admin"><AdminPayments /></ProtectedRoute>} />
+      <Route path="/admin/create-admin" element={<ProtectedRoute role="Admin"><AdminCreateAdmin /></ProtectedRoute>} />
 
       {/* Public site with navbar/footer */}
       <Route

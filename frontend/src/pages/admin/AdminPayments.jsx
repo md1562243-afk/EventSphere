@@ -9,7 +9,8 @@ const links = [
   { to: '/admin/users', label: 'Users' },
   { to: '/admin/events', label: 'Events' },
   { to: '/admin/bookings', label: 'Bookings' },
-  { to: '/admin/payments', label: 'Payments' }
+  { to: '/admin/payments', label: 'Payments' },
+  { to: '/admin/create-admin', label: 'Add Admin' }
 ];
 
 const TABS = ['Pending', 'Confirmed'];
