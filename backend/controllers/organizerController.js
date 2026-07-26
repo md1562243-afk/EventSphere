@@ -117,7 +117,7 @@ exports.changePassword = async (req, res, next) => {
   try {
     const { current_password, new_password } = req.body;
     const basic = await Organizer.findById(req.auth.organizer_id);
-    const full = await Organizer.findByEmail(basic.email); // includes password hash
+    const full = await Organizer.findByEmail(basic.email);
 
     const match = await bcrypt.compare(current_password, full.password);
     if (!match) {
@@ -155,9 +155,10 @@ exports.dashboard = async (req, res, next) => {
   }
 };
 
+// Includes both self-created events and custom events this organizer was assigned to.
 exports.myEvents = async (req, res, next) => {
   try {
-    const events = await Event.search({ organizer_id: req.auth.organizer_id, limit: 100, page: 1 });
+    const events = await Event.search({ organizer_id: req.auth.organizer_id, includeCustom: true, limit: 100, page: 1 });
     res.json({ success: true, events });
   } catch (err) {
     next(err);

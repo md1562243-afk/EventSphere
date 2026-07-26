@@ -125,11 +125,10 @@ exports.deleteOrganizer = async (req, res, next) => {
 };
 
 // ---------- Events ----------
-// Admin supervises events created by organizers — no approve/reject step exists;
-// every organizer-created event is already live. Admin can only view/delete.
+// Admin oversight: sees ALL events (organizer-created AND custom-assigned).
 exports.listEvents = async (req, res, next) => {
   try {
-    const events = await Event.search({ limit: 200, page: 1 });
+    const events = await Event.search({ includeCustom: true, limit: 200, page: 1 });
     res.json({ success: true, events });
   } catch (err) {
     next(err);
@@ -158,6 +157,9 @@ exports.listBookings = async (req, res, next) => {
   }
 };
 
+// Assigning an organizer to a custom request creates the Event row.
+// admin_id is set here (this admin performed the assignment) — this is also
+// what Event.search() uses to exclude custom events from public Browse.
 exports.assignOrganizer = async (req, res, next) => {
   try {
     const { organizer_id, event_name, event_type, ticket_price } = req.body;
@@ -174,7 +176,8 @@ exports.assignOrganizer = async (req, res, next) => {
       event_time: booking.event_time,
       event_venue: booking.event_venue,
       ticket_price: ticket_price || 0.01,
-      organizer_id
+      organizer_id,
+      admin_id: req.auth.admin_id
     });
 
     await Booking.assignEvent(req.params.id, event_id);
@@ -205,8 +208,6 @@ exports.confirmPayment = async (req, res, next) => {
     if (!payment) return res.status(404).json({ success: false, message: 'Payment not found' });
 
     await Payment.confirm(req.params.id, req.auth.admin_id);
-    // Once at least one payment on a booking is confirmed, the booking itself is Confirmed.
-    // Whether it's fully or partially paid is shown via Payment.paidAndDue, not the booking row.
     await Booking.setStatus(payment.booking_id, 'Confirmed', req.auth.admin_id);
 
     const booking = await Booking.findById(payment.booking_id);

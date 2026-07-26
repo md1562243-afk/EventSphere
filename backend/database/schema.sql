@@ -1,15 +1,8 @@
--- EventSphere Database Schema
--- MySQL 8+
--- Preserves the instructor-approved ER diagram and relational mapping exactly.
-
 CREATE DATABASE IF NOT EXISTS eventsphere
   CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 USE eventsphere;
 
--- ============================================================
--- ADMIN
--- ============================================================
 CREATE TABLE IF NOT EXISTS Admin (
   admin_id     INT AUTO_INCREMENT PRIMARY KEY,
   first_name   VARCHAR(100) NOT NULL,
@@ -26,9 +19,6 @@ CREATE TABLE IF NOT EXISTS Admin_Phone (
     ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- ============================================================
--- USER
--- ============================================================
 CREATE TABLE IF NOT EXISTS User (
   user_id      INT AUTO_INCREMENT PRIMARY KEY,
   first_name   VARCHAR(100) NOT NULL,
@@ -48,9 +38,6 @@ CREATE TABLE IF NOT EXISTS User_Phone (
     ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- ============================================================
--- ORGANIZER
--- ============================================================
 CREATE TABLE IF NOT EXISTS Organizer (
   organizer_id  INT AUTO_INCREMENT PRIMARY KEY,
   first_name    VARCHAR(100) NOT NULL,
@@ -71,9 +58,6 @@ CREATE TABLE IF NOT EXISTS Organizer_Phone (
     ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- ============================================================
--- EVENT
--- ============================================================
 CREATE TABLE IF NOT EXISTS Event (
   event_id       INT AUTO_INCREMENT PRIMARY KEY,
   event_name     VARCHAR(200) NOT NULL,
@@ -92,9 +76,6 @@ CREATE TABLE IF NOT EXISTS Event (
   INDEX idx_event_type (event_type)
 ) ENGINE=InnoDB;
 
--- ============================================================
--- BOOKING
--- ============================================================
 CREATE TABLE IF NOT EXISTS Booking (
   booking_id       INT AUTO_INCREMENT PRIMARY KEY,
   booking_status   ENUM('Pending','Confirmed','Cancelled') NOT NULL DEFAULT 'Pending',
@@ -114,9 +95,6 @@ CREATE TABLE IF NOT EXISTS Booking (
   INDEX idx_booking_event (event_id)
 ) ENGINE=InnoDB;
 
--- ============================================================
--- PAYMENT
--- ============================================================
 CREATE TABLE IF NOT EXISTS Payment (
   payment_id      INT AUTO_INCREMENT PRIMARY KEY,
   payment_date    DATE NOT NULL,
@@ -133,9 +111,6 @@ CREATE TABLE IF NOT EXISTS Payment (
   INDEX idx_payment_booking (booking_id)
 ) ENGINE=InnoDB;
 
--- ============================================================
--- BROWSE (bridge table: many-to-many User <-> Event)
--- ============================================================
 CREATE TABLE IF NOT EXISTS Browse (
   event_id    INT NOT NULL,
   user_id     INT NOT NULL,

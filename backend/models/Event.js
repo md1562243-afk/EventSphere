@@ -2,11 +2,11 @@ const pool = require('../config/database');
 
 const Event = {
   async create(data) {
-    const { event_name, event_type, event_date, event_time, event_venue, ticket_price, organizer_id } = data;
+    const { event_name, event_type, event_date, event_time, event_venue, ticket_price, organizer_id, admin_id = null } = data;
     const [result] = await pool.query(
-      `INSERT INTO Event (event_name, event_type, event_date, event_time, event_venue, ticket_price, organizer_id)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [event_name, event_type, event_date, event_time, event_venue, ticket_price, organizer_id]
+      `INSERT INTO Event (event_name, event_type, event_date, event_time, event_venue, ticket_price, organizer_id, admin_id)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [event_name, event_type, event_date, event_time, event_venue, ticket_price, organizer_id, admin_id]
     );
     return result.insertId;
   },
@@ -21,10 +21,16 @@ const Event = {
     return rows[0];
   },
 
-  // Every event is visible as soon as it's created — no approval gate.
-  async search({ q, type, date, venue, minPrice, maxPrice, sort, organizer_id, page = 1, limit = 12 }) {
+  // Public browse defaults to Organizer-created events only (admin_id IS NULL).
+  // Pass includeCustom: true for admin/organizer views that should see everything,
+  // including custom events an admin assigned an organizer to (admin_id set).
+  async search({ q, type, date, venue, minPrice, maxPrice, sort, organizer_id, includeCustom = false, page = 1, limit = 12 }) {
     let query = 'SELECT e.*, o.first_name AS organizer_first_name, o.last_name AS organizer_last_name FROM Event e JOIN Organizer o ON e.organizer_id = o.organizer_id WHERE 1=1';
     const params = [];
+
+    if (!includeCustom) {
+      query += ' AND e.admin_id IS NULL';
+    }
 
     if (organizer_id) {
       query += ' AND e.organizer_id = ?';
@@ -83,7 +89,6 @@ const Event = {
     await pool.query(`UPDATE Event SET ${fields.join(', ')} WHERE event_id = ?`, params);
   },
 
-  // Admin "supervises" — recorded via admin_id when they take an action, no approve/reject status.
   async setSupervisor(event_id, admin_id) {
     await pool.query('UPDATE Event SET admin_id = ? WHERE event_id = ?', [admin_id, event_id]);
   },
