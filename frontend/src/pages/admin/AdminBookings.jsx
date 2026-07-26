@@ -15,35 +15,33 @@ const links = [
 
 function AssignModal({ booking, organizers, onClose, onAssign }) {
   const [organizerId, setOrganizerId] = useState('');
-  const [eventName, setEventName] = useState('');
-  const [eventType, setEventType] = useState('');
-  const [ticketPrice, setTicketPrice] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const submit = async () => {
     if (!organizerId) return;
-    await onAssign(booking.booking_id, {
-      organizer_id: organizerId,
-      event_name: eventName || `Custom Event #${booking.booking_id}`,
-      event_type: eventType || 'Other',
-      ticket_price: ticketPrice || 0.01
-    });
+    setSubmitting(true);
+    try {
+      await onAssign(booking.booking_id, { organizer_id: organizerId });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <div className="fixed inset-0 bg-black/40 grid place-items-center z-50 p-4">
       <div className="card p-6 w-full max-w-md">
-        <h3 className="font-bold mb-4">Assign Organizer</h3>
-        <div className="space-y-3">
-          <select className="input-field" value={organizerId} onChange={(e) => setOrganizerId(e.target.value)}>
-            <option value="">Select organizer...</option>
-            {organizers.map((o) => <option key={o.organizer_id} value={o.organizer_id}>#{o.organizer_id} — {o.first_name} {o.last_name}</option>)}
-          </select>
-          <input className="input-field" placeholder="Event name" value={eventName} onChange={(e) => setEventName(e.target.value)} />
-          <input className="input-field" placeholder="Event type" value={eventType} onChange={(e) => setEventType(e.target.value)} />
-          <input type="number" className="input-field" placeholder="Ticket price (or agreed budget)" value={ticketPrice} onChange={(e) => setTicketPrice(e.target.value)} />
-        </div>
+        <h3 className="font-bold mb-2">Assign Organizer</h3>
+        <p className="text-xs text-body mb-4">
+          Event details (name, venue, date/time, ticket price) are filled in automatically from the user's request.
+        </p>
+        <select className="input-field" value={organizerId} onChange={(e) => setOrganizerId(e.target.value)}>
+          <option value="">Select organizer...</option>
+          {organizers.map((o) => <option key={o.organizer_id} value={o.organizer_id}>#{o.organizer_id} — {o.first_name} {o.last_name}</option>)}
+        </select>
         <div className="flex gap-3 mt-5">
-          <button onClick={submit} className="btn-primary flex-1">Assign</button>
+          <button onClick={submit} disabled={!organizerId || submitting} className="btn-primary flex-1 disabled:opacity-60">
+            {submitting ? 'Assigning...' : 'Assign'}
+          </button>
           <button onClick={onClose} className="btn-outline flex-1">Cancel</button>
         </div>
       </div>

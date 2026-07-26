@@ -157,25 +157,36 @@ exports.listBookings = async (req, res, next) => {
   }
 };
 
-// Assigning an organizer to a custom request creates the Event row.
-// admin_id is set here (this admin performed the assignment) — this is also
-// what Event.search() uses to exclude custom events from public Browse.
+// Admin only selects the organizer. Event details are derived automatically:
+// venue/date/time come from the booking itself; ticket_price is the sum of
+// this booking's existing Payment rows (paid + due — what the user already
+// committed to); event_name/event_type have no stored source in the schema
+// (Booking has neither column), so they use a clear fixed label.
+// admin_id is set to this admin — also what Event.search() uses to keep
+// these custom events out of the public Browse page.
 exports.assignOrganizer = async (req, res, next) => {
   try {
-    const { organizer_id, event_name, event_type, ticket_price } = req.body;
+    const { organizer_id } = req.body;
+    if (!organizer_id) {
+      return res.status(400).json({ success: false, message: 'organizer_id is required' });
+    }
+
     const booking = await Booking.findById(req.params.id);
     if (!booking) return res.status(404).json({ success: false, message: 'Booking not found' });
     if (booking.event_id) {
       return res.status(400).json({ success: false, message: 'This booking is already linked to an event' });
     }
 
+    const { paid, due } = await Payment.paidAndDue(booking.booking_id);
+    const total_cost = Number(paid) + Number(due);
+
     const event_id = await Event.create({
-      event_name: event_name || `Custom Event #${booking.booking_id}`,
-      event_type: event_type || 'Other',
+      event_name: `Custom Event #${booking.booking_id}`,
+      event_type: 'Other',
       event_date: booking.event_date,
       event_time: booking.event_time,
       event_venue: booking.event_venue,
-      ticket_price: ticket_price || 0.01,
+      ticket_price: total_cost > 0 ? total_cost : 0.01,
       organizer_id,
       admin_id: req.auth.admin_id
     });
@@ -183,8 +194,8 @@ exports.assignOrganizer = async (req, res, next) => {
     await Booking.assignEvent(req.params.id, event_id);
 
     const organizer = await Organizer.findById(organizer_id);
-    emailService.organizerCustomEventAssigned(organizer.email, event_type || 'Custom Event');
-    emailService.userOrganizerAssigned(booking.user_email, event_type || 'Custom Event');
+    emailService.organizerCustomEventAssigned(organizer.email, 'Custom Event');
+    emailService.userOrganizerAssigned(booking.user_email, 'Custom Event');
 
     res.json({ success: true, message: 'Organizer assigned to custom event', event_id });
   } catch (err) {

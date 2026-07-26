@@ -22,8 +22,7 @@ const Event = {
   },
 
   // Public browse defaults to Organizer-created events only (admin_id IS NULL).
-  // Pass includeCustom: true for admin/organizer views that should see everything,
-  // including custom events an admin assigned an organizer to (admin_id set).
+  // Pass includeCustom: true for admin/organizer views that should see everything.
   async search({ q, type, date, venue, minPrice, maxPrice, sort, organizer_id, includeCustom = false, page = 1, limit = 12 }) {
     let query = 'SELECT e.*, o.first_name AS organizer_first_name, o.last_name AS organizer_last_name FROM Event e JOIN Organizer o ON e.organizer_id = o.organizer_id WHERE 1=1';
     const params = [];
