@@ -86,7 +86,8 @@ export default function RequestCustomEvent() {
 
         <div>
           <label className="block text-sm font-medium text-heading mb-1">Venue</label>
-          <input className="input-field" placeholder="Preferred venue or area" {...register('venue', { required: true })} />
+          <input className="input-field" placeholder="Preferred venue or area" {...register('event_venue', { required: true })} />
+          {errors.event_venue && <p className="text-errorc text-xs mt-1">Venue is required</p>}
         </div>
 
         <div>
