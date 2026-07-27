@@ -3,8 +3,8 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { CalendarDays, MapPin, Ticket, Share2, ArrowLeft } from 'lucide-react';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
+import { formatTime12hr } from '../utils/formatTime';
 
-const FALLBACK_IMG = 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1200&q=60';
 const METHODS = ['bKash', 'Nagad', 'Credit Card', 'Debit Card', 'Cash'];
 
 export default function EventDetails() {
@@ -24,7 +24,6 @@ export default function EventDetails() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  // Check if event date+time has already passed
   const isBookingClosed = (() => {
     if (!event) return false;
     const eventDateTime = new Date(`${event.event_date}T${event.event_time}`);
@@ -59,16 +58,16 @@ export default function EventDetails() {
 
       <div className="grid lg:grid-cols-3 gap-10">
         <div className="lg:col-span-2">
-          <div className="rounded-img overflow-hidden mb-6 h-72 sm:h-96">
-            <img src={FALLBACK_IMG} alt={event.event_name} className="h-full w-full object-cover" />
-          </div>
-
           <span className="badge bg-primary/10 text-primary mb-3">{event.event_type}</span>
           <h1 className="text-3xl mb-4">{event.event_name}</h1>
 
           <div className="flex flex-wrap gap-6 text-sm text-body mb-6">
-            <span className="flex items-center gap-2"><CalendarDays size={16} /> {event.event_date} · {event.event_time}</span>
-            <span className="flex items-center gap-2"><MapPin size={16} /> {event.event_venue}</span>
+            <span className="flex items-center gap-2">
+              <CalendarDays size={16} /> {event.event_date} · {formatTime12hr(event.event_time)}
+            </span>
+            <span className="flex items-center gap-2">
+              <MapPin size={16} /> {event.event_venue}
+            </span>
           </div>
 
           <div className="card p-6">
@@ -88,7 +87,6 @@ export default function EventDetails() {
               </button>
             </div>
 
-            {/* Only show payment method if booking is still open */}
             {!isBookingClosed && (
               <>
                 <label className="block text-sm font-medium text-heading mb-1">Payment method</label>
