@@ -25,6 +25,8 @@ exports.bookEvent = async (req, res, next) => {
       event_date: event.event_date,
       event_time: event.event_time,
       event_venue: event.event_venue,
+      event_name: event.event_name,
+      event_type: event.event_type,
       user_id: req.auth.user_id
     });
 
