@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import DashboardLayout from '../../components/DashboardLayout';
+import TimeInput12hr from '../../components/TimeInput12hr';
 import api from '../../api/axios';
 
 const links = [
@@ -87,7 +88,11 @@ export default function OrganizerEventForm() {
           </div>
           <div>
             <label className="block text-sm font-medium text-heading mb-1">Time</label>
-            <input type="time" required className="input-field" value={form.event_time} onChange={update('event_time')} />
+            <TimeInput12hr
+              required
+              value={form.event_time}
+              onChange={(val) => setForm({ ...form, event_time: val })}
+            />
           </div>
         </div>
         <div>

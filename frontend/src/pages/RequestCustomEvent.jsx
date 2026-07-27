@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useForm, useWatch } from 'react-hook-form';
+import { useForm, useWatch, Controller } from 'react-hook-form';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
+import TimeInput12hr from '../components/TimeInput12hr';
 
 const METHODS = ['bKash', 'Nagad', 'Credit Card', 'Debit Card', 'Cash'];
 const EVENT_TYPES = [
@@ -71,7 +72,15 @@ export default function RequestCustomEvent() {
           </div>
           <div>
             <label className="block text-sm font-medium text-heading mb-1">Preferred Time</label>
-            <input type="time" className="input-field" {...register('event_time', { required: true })} />
+            <Controller
+              name="event_time"
+              control={control}
+              rules={{ required: true }}
+              defaultValue=""
+              render={({ field }) => (
+                <TimeInput12hr required value={field.value} onChange={field.onChange} />
+              )}
+            />
           </div>
         </div>
 
