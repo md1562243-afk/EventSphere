@@ -79,6 +79,8 @@ CREATE TABLE IF NOT EXISTS Event (
 CREATE TABLE IF NOT EXISTS Booking (
   booking_id       INT AUTO_INCREMENT PRIMARY KEY,
   booking_status   ENUM('Pending','Confirmed','Cancelled') NOT NULL DEFAULT 'Pending',
+  event_name       VARCHAR(200) NULL,
+  event_type       VARCHAR(100) NULL,
   event_id         INT NULL,
   event_date       DATE NOT NULL,
   event_time       TIME NOT NULL,
