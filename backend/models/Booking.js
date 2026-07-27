@@ -2,11 +2,11 @@ const pool = require('../config/database');
 
 const Booking = {
   async create(data) {
-    const { event_id, event_date, event_time, event_venue, user_id } = data;
+    const { event_id, event_date, event_time, event_venue, event_name, event_type, user_id } = data;
     const [result] = await pool.query(
-      `INSERT INTO Booking (event_id, event_date, event_time, event_venue, user_id, booking_status)
-       VALUES (?, ?, ?, ?, ?, 'Pending')`,
-      [event_id || null, event_date, event_time, event_venue, user_id]
+      `INSERT INTO Booking (event_id, event_date, event_time, event_venue, event_name, event_type, user_id, booking_status)
+       VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending')`,
+      [event_id || null, event_date, event_time, event_venue, event_name || null, event_type || null, user_id]
     );
     return result.insertId;
   },
@@ -14,7 +14,9 @@ const Booking = {
   async findById(booking_id) {
     const [rows] = await pool.query(
       `SELECT b.*, u.first_name AS user_first_name, u.last_name AS user_last_name, u.email AS user_email,
-              e.event_name, e.event_type, e.organizer_id
+              COALESCE(e.event_name, b.event_name) AS event_name,
+              COALESCE(e.event_type, b.event_type) AS event_type,
+              e.organizer_id
        FROM Booking b
        JOIN User u ON b.user_id = u.user_id
        LEFT JOIN Event e ON b.event_id = e.event_id
@@ -26,7 +28,8 @@ const Booking = {
 
   async byUser(user_id) {
     const [rows] = await pool.query(
-      `SELECT b.*, e.event_name, e.event_type
+      `SELECT b.*, COALESCE(e.event_name, b.event_name) AS event_name,
+              COALESCE(e.event_type, b.event_type) AS event_type
        FROM Booking b LEFT JOIN Event e ON b.event_id = e.event_id
        WHERE b.user_id = ? ORDER BY b.booking_id DESC`,
       [user_id]
@@ -48,7 +51,8 @@ const Booking = {
 
   async all(filters = {}) {
     let query = `SELECT b.*, u.first_name AS user_first_name, u.last_name AS user_last_name,
-                 e.event_name, e.event_type
+                 COALESCE(e.event_name, b.event_name) AS event_name,
+                 COALESCE(e.event_type, b.event_type) AS event_type
                  FROM Booking b
                  JOIN User u ON b.user_id = u.user_id
                  LEFT JOIN Event e ON b.event_id = e.event_id WHERE 1=1`;

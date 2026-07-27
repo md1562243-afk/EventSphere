@@ -41,16 +41,15 @@ exports.bookEvent = async (req, res, next) => {
   }
 };
 
-// Request a custom event — full payment of the Estimated Budget only.
-// The Estimated Budget is used only to calculate the Payment.payment_amount value;
-// it is never stored as its own column.
+// Request a custom event — user provides name, type, date, time, venue, budget.
+// Organizer is assigned automatically (randomly) once payment is confirmed.
 exports.requestCustomEvent = async (req, res, next) => {
   try {
-    const missing = missingFields(req.body, ['event_type', 'event_date', 'event_time', 'venue', 'estimated_budget', 'payment_method']);
+    const missing = missingFields(req.body, ['event_name', 'event_type', 'event_date', 'event_time', 'venue', 'estimated_budget', 'payment_method']);
     if (missing.length) {
       return res.status(400).json({ success: false, message: `Missing fields: ${missing.join(', ')}` });
     }
-    const { event_date, event_time, venue, payment_method, estimated_budget } = req.body;
+    const { event_name, event_type, event_date, event_time, venue, payment_method, estimated_budget } = req.body;
 
     paymentService.assertValidMethod(payment_method);
     if (!isFutureDate(event_date)) {
@@ -67,6 +66,8 @@ exports.requestCustomEvent = async (req, res, next) => {
       event_date,
       event_time,
       event_venue: venue,
+      event_name,
+      event_type,
       user_id: req.auth.user_id
     });
 
