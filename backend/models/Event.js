@@ -21,14 +21,17 @@ const Event = {
     return rows[0];
   },
 
-  // Public browse: only Approved events by Approved organizers
-  // Pass includeCustom: true for admin/organizer dashboards
+  // Public browse: only organizer-created events (admin_id IS NULL) that are Approved
+  // User-requested custom events have admin_id set — those are excluded
+  // Pass includeCustom: true for admin/organizer dashboards that should see everything
   async search({ q, type, date, venue, minPrice, maxPrice, sort, organizer_id, includeCustom = false, page = 1, limit = 12 }) {
     let query = 'SELECT e.*, o.first_name AS organizer_first_name, o.last_name AS organizer_last_name FROM Event e JOIN Organizer o ON e.organizer_id = o.organizer_id WHERE 1=1';
     const params = [];
 
     if (!includeCustom) {
-      query += ' AND e.status = "Approved" AND o.status = "Approved"';
+      // organizer-created public events have admin_id = NULL
+      // user-requested custom events have admin_id set by admin during assignment
+      query += ' AND e.admin_id IS NULL AND e.status = "Approved" AND o.status = "Approved"';
     }
 
     if (organizer_id) {
