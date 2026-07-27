@@ -37,7 +37,7 @@ export default function OrganizerDashboard() {
                 <thead>
                   <tr className="text-left text-body border-b border-slate-100">
                     <th className="py-2">Event</th>
-                    <th className="py-2">Booked By</th>
+                    <th className="py-2">User ID</th>
                     <th className="py-2">Status</th>
                   </tr>
                 </thead>
@@ -45,7 +45,7 @@ export default function OrganizerDashboard() {
                   {data.recent_bookings.map((b) => (
                     <tr key={b.booking_id} className="border-b border-slate-50">
                       <td className="py-3">{b.event_name}</td>
-                      <td className="py-3">{b.user_first_name} {b.user_last_name}</td>
+                      <td className="py-3">#{b.user_id}</td>
                       <td className="py-3"><StatusBadge status={b.booking_status} /></td>
                     </tr>
                   ))}
