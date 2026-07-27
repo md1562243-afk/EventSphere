@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
-import { formatTime12hr } from '../../utils/formatTime';
 
 const links = [
   { to: '/admin/dashboard', label: 'Overview', end: true },
@@ -13,44 +12,24 @@ const links = [
   { to: '/admin/create-admin', label: 'Add Admin' }
 ];
 
-const TABS = ['Pending', 'Confirmed'];
-
 export default function AdminPayments() {
-  const [tab, setTab] = useState('Pending');
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const load = () => {
     setLoading(true);
-    api.get('/admin/payments', { params: { status: tab } }).then((res) => setPayments(res.data.payments)).finally(() => setLoading(false));
+    api.get('/admin/payments').then((res) => setPayments(res.data.payments)).finally(() => setLoading(false));
   };
 
-  useEffect(load, [tab]);
+  useEffect(load, []);
 
   const confirm = async (id) => {
-    const res = await api.put(`/admin/payments/${id}/confirm`);
-    if (res.data.warning) {
-      alert(res.data.warning);
-    }
+    await api.put(`/admin/payments/${id}/confirm`);
     load();
   };
 
   return (
     <DashboardLayout title="Verify Payments" links={links}>
-      <div className="flex gap-2 mb-5">
-        {TABS.map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`text-sm font-semibold rounded-full px-4 py-1.5 transition duration-250 ${
-              tab === t ? 'bg-primary text-white' : 'bg-slate-100 text-body hover:bg-primary/10'
-            }`}
-          >
-            {t}
-          </button>
-        ))}
-      </div>
-
       <div className="card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -58,8 +37,6 @@ export default function AdminPayments() {
               <tr className="text-left text-body">
                 <th className="py-3 px-4">Payment ID</th>
                 <th className="py-3 px-4">Booking ID</th>
-                <th className="py-3 px-4">Date</th>
-                <th className="py-3 px-4">Time</th>
                 <th className="py-3 px-4">Method</th>
                 <th className="py-3 px-4">Amount</th>
                 <th className="py-3 px-4"></th>
@@ -70,21 +47,17 @@ export default function AdminPayments() {
                 <tr key={p.payment_id} className="border-t border-slate-50">
                   <td className="py-3 px-4 text-body">#{p.payment_id}</td>
                   <td className="py-3 px-4 text-body">#{p.booking_id}</td>
-                  <td className="py-3 px-4">{p.payment_date}</td>
-                  <td className="py-3 px-4">{formatTime12hr(p.payment_time)}</td>
                   <td className="py-3 px-4">{p.payment_method}</td>
                   <td className="py-3 px-4">৳{Number(p.payment_amount).toLocaleString()}</td>
                   <td className="py-3 px-4">
-                    {tab === 'Pending' && (
-                      <button onClick={() => confirm(p.payment_id)} className="text-success text-xs font-semibold hover:underline">
-                        Confirm
-                      </button>
-                    )}
+                    <button onClick={() => confirm(p.payment_id)} className="text-success text-xs font-semibold hover:underline">
+                      Confirm
+                    </button>
                   </td>
                 </tr>
               ))}
               {!loading && payments.length === 0 && (
-                <tr><td colSpan={7} className="py-8 text-center text-body">No {tab.toLowerCase()} payments.</td></tr>
+                <tr><td colSpan={5} className="py-8 text-center text-body">No payments yet.</td></tr>
               )}
             </tbody>
           </table>

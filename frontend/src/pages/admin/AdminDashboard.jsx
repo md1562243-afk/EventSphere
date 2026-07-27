@@ -6,7 +6,6 @@ import api from '../../api/axios';
 
 const links = [
   { to: '/admin/dashboard', label: 'Overview', end: true },
-  { to: '/admin/profile', label: 'My Profile' },
   { to: '/admin/organizers', label: 'Organizers' },
   { to: '/admin/users', label: 'Users' },
   { to: '/admin/events', label: 'Events' },
@@ -29,7 +28,7 @@ export default function AdminDashboard() {
           <StatCard icon={Users} label="Total Users" value={data.total_users} accent="primary" />
           <StatCard icon={Users} label="Total Organizers" value={data.total_organizers} accent="secondary" />
           <StatCard icon={Clock} label="Pending Organizers" value={data.pending_organizer_requests} accent="accent" />
-          <StatCard icon={CreditCard} label="Pending Payments" value={data.pending_payments} accent="accent" />
+          <StatCard icon={CreditCard} label="Pending Bookings" value={data.pending_bookings} accent="accent" />
           <StatCard icon={DollarSign} label="Total Revenue" value={`৳${Number(data.total_revenue).toLocaleString()}`} accent="success" />
           <StatCard icon={TrendingUp} label="Total Events" value={data.total_events} accent="secondary" />
         </div>

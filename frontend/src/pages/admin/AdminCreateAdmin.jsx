@@ -27,7 +27,7 @@ export default function AdminCreateAdmin() {
     setLoading(true);
     setStatus(null);
     try {
-      const res = await api.post('/admin/admins', form);
+      const res = await api.post('/admin/create', form);
       setStatus({ type: 'success', message: `Admin "${res.data.admin.email}" created successfully.` });
       setForm({ first_name: '', last_name: '', email: '', password: '' });
     } catch (err) {
