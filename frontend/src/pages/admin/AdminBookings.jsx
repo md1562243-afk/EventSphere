@@ -35,12 +35,10 @@ export default function AdminBookings() {
               <tr className="text-left text-body">
                 <th className="py-3 px-4">Booking ID</th>
                 <th className="py-3 px-4">User ID</th>
-                <th className="py-3 px-4">Event</th>
-                <th className="py-3 px-4">Date / Time</th>
+                <th className="py-3 px-4">Event Date</th>
+                <th className="py-3 px-4">Event Time</th>
                 <th className="py-3 px-4">Venue</th>
                 <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4">Total Cost</th>
-                <th className="py-3 px-4">Paid / Due</th>
               </tr>
             </thead>
             <tbody>
@@ -48,16 +46,14 @@ export default function AdminBookings() {
                 <tr key={b.booking_id} className="border-t border-slate-50">
                   <td className="py-3 px-4 text-body">#{b.booking_id}</td>
                   <td className="py-3 px-4">#{b.user_id}</td>
-                  <td className="py-3 px-4 font-medium text-heading">{b.event_name || 'Unassigned custom event'}</td>
-                  <td className="py-3 px-4">{b.event_date} {formatTime12hr(b.event_time)}</td>
+                  <td className="py-3 px-4">{b.event_date}</td>
+                  <td className="py-3 px-4">{formatTime12hr(b.event_time)}</td>
                   <td className="py-3 px-4">{b.event_venue}</td>
                   <td className="py-3 px-4"><StatusBadge status={b.booking_status} /></td>
-                  <td className="py-3 px-4">৳{(Number(b.paid) + Number(b.due)).toLocaleString()}</td>
-                  <td className="py-3 px-4">৳{Number(b.paid).toLocaleString()} / ৳{Number(b.due).toLocaleString()}</td>
                 </tr>
               ))}
               {bookings.length === 0 && (
-                <tr><td colSpan={8} className="py-8 text-center text-body">No bookings yet.</td></tr>
+                <tr><td colSpan={6} className="py-8 text-center text-body">No bookings yet.</td></tr>
               )}
             </tbody>
           </table>
