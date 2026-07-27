@@ -1,11 +1,27 @@
 const pool = require('../config/database');
 
+function nowInDhaka() {
+  const now = new Date();
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Dhaka',
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit',
+    hour12: false
+  }).formatToParts(now);
+
+  const get = (type) => parts.find((p) => p.type === type).value;
+  const date = `${get('year')}-${get('month')}-${get('day')}`;
+  const time = `${get('hour')}:${get('minute')}:${get('second')}`;
+  return { date, time };
+}
+
 const Payment = {
   async create({ payment_method, payment_amount, booking_id }) {
+    const { date, time } = nowInDhaka();
     const [result] = await pool.query(
       `INSERT INTO Payment (payment_date, payment_time, payment_method, payment_status, payment_amount, booking_id)
-       VALUES (CURDATE(), CURTIME(), ?, 'Pending', ?, ?)`,
-      [payment_method, payment_amount, booking_id]
+       VALUES (?, ?, ?, 'Pending', ?, ?)`,
+      [date, time, payment_method, payment_amount, booking_id]
     );
     return result.insertId;
   },
@@ -27,8 +43,6 @@ const Payment = {
     return rows;
   },
 
-  // Amount confirmed vs still pending for a booking — computed purely from existing Payment rows,
-  // which is how the advance/remaining-due split is represented (no extra columns needed).
   async paidAndDue(booking_id) {
     const [rows] = await pool.query(
       `SELECT
