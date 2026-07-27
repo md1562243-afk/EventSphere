@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Search, SlidersHorizontal } from 'lucide-react';
+import { Search, SlidersHorizontal, ArrowRight } from 'lucide-react';
 import api from '../api/axios';
 import EventCard from '../components/EventCard';
+import ShowcaseCard, { showcaseEvents } from '../components/ShowcaseCard';
+import { Link } from 'react-router-dom';
 
 const SORT_OPTIONS = [
   { value: 'newest', label: 'Newest' },
@@ -109,6 +111,24 @@ export default function BrowseEvents() {
           {events.map((e) => <EventCard key={e.event_id} event={e} />)}
         </div>
       )}
+
+      {/* Showcase / What We Offer */}
+      <section className="mt-20 pt-16 border-t border-slate-100">
+        <div className="flex items-end justify-between mb-8">
+          <div>
+            <h2 className="text-2xl sm:text-3xl mb-1">What We Offer</h2>
+            <p className="text-body text-sm">Popular event types you can request — starting prices shown</p>
+          </div>
+          <Link to="/request-event" className="text-primary text-sm font-semibold flex items-center gap-1">
+            Request custom <ArrowRight size={14} />
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {showcaseEvents.map((e) => (
+            <ShowcaseCard key={e.id} event={e} />
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

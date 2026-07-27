@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Search, CalendarCheck, Sparkles } from 'lucide-react';
 import api from '../api/axios';
 import EventCard from '../components/EventCard';
+import ShowcaseCard, { showcaseEvents } from '../components/ShowcaseCard';
 
 const steps = [
   { icon: Search, title: 'Browse', desc: 'Explore approved events by type, date, or venue near you.' },
@@ -66,6 +67,26 @@ export default function Home() {
             ) : (
               <p className="text-body col-span-full text-center py-12">No events published yet — check back soon.</p>
             )}
+          </div>
+        </div>
+      </section>
+
+      {/* Showcase / What We Offer */}
+      <section className="py-20 bg-white">
+        <div className="container-app">
+          <div className="flex items-end justify-between mb-8">
+            <div>
+              <h2 className="text-2xl sm:text-3xl mb-1">What We Offer</h2>
+              <p className="text-body text-sm">Popular event types you can request — starting prices shown</p>
+            </div>
+            <Link to="/request-event" className="text-primary text-sm font-semibold flex items-center gap-1">
+              Request custom <ArrowRight size={14} />
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {showcaseEvents.map((e) => (
+              <ShowcaseCard key={e.id} event={e} />
+            ))}
           </div>
         </div>
       </section>
