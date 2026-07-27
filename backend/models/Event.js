@@ -21,7 +21,6 @@ const Event = {
     return rows[0];
   },
 
-  // Public browse: only Approved organizer event templates
   async search({ q, type, minPrice, maxPrice, sort, organizer_id, includeCustom = false, page = 1, limit = 12 }) {
     let query = 'SELECT e.*, o.first_name AS organizer_first_name, o.last_name AS organizer_last_name FROM Event e JOIN Organizer o ON e.organizer_id = o.organizer_id WHERE 1=1';
     const params = [];

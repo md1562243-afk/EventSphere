@@ -3,7 +3,6 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Ticket, Share2, ArrowLeft, CalendarDays, MapPin, Clock } from 'lucide-react';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
-import { formatTime12hr } from '../utils/formatTime';
 
 const METHODS = ['bKash', 'Nagad', 'Credit Card', 'Debit Card', 'Cash'];
 

@@ -10,7 +10,7 @@ const { verifyUser } = require('../middleware/verifyRole');
 router.post('/register', userController.register);
 router.post('/login', userController.login);
 
-// Protected (User only)
+// Protected — User only
 router.get('/profile', auth, verifyUser, userController.getProfile);
 router.put('/profile', auth, verifyUser, userController.updateProfile);
 router.post('/phone', auth, verifyUser, userController.addPhone);

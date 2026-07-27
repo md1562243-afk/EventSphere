@@ -9,7 +9,7 @@ const { verifyOrganizer } = require('../middleware/verifyRole');
 router.post('/register', organizerController.register);
 router.post('/login', organizerController.login);
 
-// Protected (Organizer only)
+// Protected — Organizer only
 router.get('/profile', auth, verifyOrganizer, organizerController.getProfile);
 router.put('/profile', auth, verifyOrganizer, organizerController.updateProfile);
 router.post('/phone', auth, verifyOrganizer, organizerController.addPhone);

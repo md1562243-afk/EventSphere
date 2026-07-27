@@ -5,7 +5,7 @@ const auth = require('../middleware/auth');
 
 // Generic booking lookup, accessible to any authenticated role that owns
 // or manages the booking. Role-specific creation/listing endpoints live
-// under /api/users and /api/organizers per their respective workflows.
+// under /users and /admin per their respective workflows.
 router.get('/:id', auth, async (req, res, next) => {
   try {
     const booking = await Booking.findById(req.params.id);

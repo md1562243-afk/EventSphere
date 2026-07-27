@@ -8,6 +8,8 @@ const Payment = require('../models/Payment');
 const { signToken } = require('../utils/token');
 const emailService = require('../services/emailService');
 
+const SEED_ADMIN_EMAIL = process.env.SEED_ADMIN_EMAIL || 'admin@eventsphere.com';
+
 exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -58,6 +60,32 @@ exports.createAdmin = async (req, res, next) => {
       message: 'Admin created successfully',
       admin: { admin_id, first_name, last_name, email }
     });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.listAdmins = async (req, res, next) => {
+  try {
+    const admins = await Admin.all();
+    res.json({ success: true, admins });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.deleteAdmin = async (req, res, next) => {
+  try {
+    const admin = await Admin.findById(req.params.id);
+    if (!admin) return res.status(404).json({ success: false, message: 'Admin not found' });
+
+    // BLOCK: Seed admin can never be deleted
+    if (admin.email === SEED_ADMIN_EMAIL) {
+      return res.status(403).json({ success: false, message: 'Seed admin cannot be deleted' });
+    }
+
+    await Admin.delete(req.params.id);
+    res.json({ success: true, message: 'Admin removed' });
   } catch (err) {
     next(err);
   }
@@ -115,7 +143,7 @@ exports.deleteUser = async (req, res, next) => {
   }
 };
 
-// Hard delete organizer + cascade
+// Hard delete organizer + full cascade
 exports.deleteOrganizer = async (req, res, next) => {
   try {
     const organizer = await Organizer.findById(req.params.id);
@@ -182,7 +210,6 @@ exports.listPayments = async (req, res, next) => {
   }
 };
 
-// Confirming a payment approves the Booking and the linked Event (if still Pending).
 exports.confirmPayment = async (req, res, next) => {
   try {
     const payment = await Payment.findById(req.params.id);

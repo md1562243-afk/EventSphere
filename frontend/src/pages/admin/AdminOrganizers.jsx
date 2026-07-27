@@ -22,13 +22,24 @@ export default function AdminOrganizers() {
 
   const load = () => {
     setLoading(true);
-    api.get('/admin/organizers', { params: { status: tab } }).then((res) => setOrganizers(res.data.organizers)).finally(() => setLoading(false));
+    api.get('/admin/organizers', { params: { status: tab } })
+      .then((res) => setOrganizers(res.data.organizers))
+      .finally(() => setLoading(false));
   };
 
   useEffect(load, [tab]);
 
-  const approve = async (id) => { await api.put(`/admin/organizers/${id}/approve`); load(); };
-  const remove = async (id) => { if (window.confirm('Remove this organizer? This will delete all their events and bookings.')) { await api.delete(`/admin/organizers/${id}`); load(); } };
+  const approve = async (id) => {
+    await api.put(`/admin/organizers/${id}/approve`);
+    load();
+  };
+
+  const remove = async (id) => {
+    if (window.confirm('Remove this organizer? This will delete all their events and bookings.')) {
+      await api.delete(`/admin/organizers/${id}`);
+      load();
+    }
+  };
 
   return (
     <DashboardLayout title="Organizer Approvals" links={links}>
@@ -78,7 +89,11 @@ export default function AdminOrganizers() {
                 </tr>
               ))}
               {!loading && organizers.length === 0 && (
-                <tr><td colSpan={6} className="py-8 text-center text-body">No {tab.toLowerCase()} organizers.</td></tr>
+                <tr>
+                  <td colSpan={6} className="py-8 text-center text-body">
+                    No {tab.toLowerCase()} organizers.
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>

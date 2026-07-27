@@ -6,13 +6,13 @@ const Admin = {
     return rows[0];
   },
 
-  async findById(id) {
-    const [rows] = await pool.query('SELECT admin_id, first_name, last_name, email FROM Admin WHERE admin_id = ?', [id]);
+  async findById(admin_id) {
+    const [rows] = await pool.query('SELECT * FROM Admin WHERE admin_id = ?', [admin_id]);
     return rows[0];
   },
 
   async all() {
-    const [rows] = await pool.query('SELECT admin_id, first_name, last_name, email FROM Admin ORDER BY admin_id ASC');
+    const [rows] = await pool.query('SELECT admin_id, first_name, last_name, email FROM Admin ORDER BY admin_id');
     return rows;
   },
 
@@ -22,6 +22,15 @@ const Admin = {
       [first_name, last_name, email, hashedPassword]
     );
     return result.insertId;
+  },
+
+  async delete(admin_id) {
+    await pool.query('DELETE FROM Admin WHERE admin_id = ?', [admin_id]);
+  },
+
+  async count() {
+    const [rows] = await pool.query('SELECT COUNT(*) AS total FROM Admin');
+    return rows[0].total;
   }
 };
 

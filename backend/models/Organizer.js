@@ -79,34 +79,35 @@ const Organizer = {
     return rows[0].total;
   },
 
-  // Hard delete with full cascade:
-  // 1. Find all events by this organizer
-  // 2. Delete bookings for those events (payments auto-delete via CASCADE)
-  // 3. Delete events (browse auto-deletes via CASCADE)
-  // 4. Delete organizer phones
-  // 5. Delete organizer
+  // Hard delete with full cascade — ONLY touches Organizer-related tables
   async delete(organizer_id) {
     const conn = await pool.getConnection();
     try {
       await conn.beginTransaction();
 
-      // 1. Get all events created by this organizer
+      // 1. Get all events by this organizer
       const [events] = await conn.query('SELECT event_id FROM Event WHERE organizer_id = ?', [organizer_id]);
       const eventIds = events.map((e) => e.event_id);
 
-      // 2. Delete bookings tied to those events (Payment cascades automatically)
+      // 2. Delete bookings tied to those events (payments cascade via FK)
       if (eventIds.length > 0) {
         const placeholders = eventIds.map(() => '?').join(',');
         await conn.query(`DELETE FROM Booking WHERE event_id IN (${placeholders})`, eventIds);
       }
 
-      // 3. Delete all events by this organizer (Browse cascades automatically)
+      // 3. Delete browse records for those events
+      if (eventIds.length > 0) {
+        const placeholders = eventIds.map(() => '?').join(',');
+        await conn.query(`DELETE FROM Browse WHERE event_id IN (${placeholders})`, eventIds);
+      }
+
+      // 4. Delete all events by this organizer
       await conn.query('DELETE FROM Event WHERE organizer_id = ?', [organizer_id]);
 
-      // 4. Delete organizer phone numbers
+      // 5. Delete organizer phone numbers
       await conn.query('DELETE FROM Organizer_Phone WHERE organizer_id = ?', [organizer_id]);
 
-      // 5. Delete the organizer
+      // 6. Delete the organizer
       await conn.query('DELETE FROM Organizer WHERE organizer_id = ?', [organizer_id]);
 
       await conn.commit();

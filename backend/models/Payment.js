@@ -20,6 +20,18 @@ const Payment = {
     return rows;
   },
 
+  async byUser(user_id) {
+    const [rows] = await pool.query(
+      `SELECT p.*, b.event_name, b.event_type, b.event_date, b.event_venue, b.event_time
+       FROM Payment p
+       JOIN Booking b ON p.booking_id = b.booking_id
+       WHERE b.user_id = ?
+       ORDER BY p.payment_id DESC`,
+      [user_id]
+    );
+    return rows;
+  },
+
   async all() {
     const [rows] = await pool.query(
       `SELECT p.*, b.user_id, b.event_id, b.booking_status, b.event_date, b.event_time, b.event_venue

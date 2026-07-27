@@ -1,18 +1,17 @@
 const express = require('express');
 const router = express.Router();
+const { authenticate, authorize } = require('../middleware/auth');
 const adminController = require('../controllers/adminController');
-const auth = require('../middleware/auth');
-const { verifyAdmin } = require('../middleware/verifyRole');
 
 // Public
 router.post('/login', adminController.login);
 
-// Protected (Admin only) — no public registration per spec
-router.use(auth, verifyAdmin);
+// Protected — Admin only
+router.use(authenticate, authorize('Admin'));
 
-router.get('/dashboard', adminController.dashboard);
-
-router.post('/admins', adminController.createAdmin);
+router.post('/create', adminController.createAdmin);
+router.get('/all', adminController.listAdmins);
+router.delete('/:id', adminController.deleteAdmin);
 
 router.get('/organizers', adminController.listOrganizers);
 router.put('/organizers/:id/approve', adminController.approveOrganizer);
@@ -27,8 +26,9 @@ router.put('/events/:id/approve', adminController.approveEvent);
 router.delete('/events/:id', adminController.deleteEvent);
 
 router.get('/bookings', adminController.listBookings);
-
 router.get('/payments', adminController.listPayments);
 router.put('/payments/:id/confirm', adminController.confirmPayment);
+
+router.get('/dashboard', adminController.dashboard);
 
 module.exports = router;
