@@ -5,6 +5,7 @@ import api from '../../api/axios';
 
 const links = [
   { to: '/admin/dashboard', label: 'Overview', end: true },
+  { to: '/admin/profile', label: 'My Profile' },
   { to: '/admin/organizers', label: 'Organizers' },
   { to: '/admin/users', label: 'Users' },
   { to: '/admin/events', label: 'Events' },
@@ -29,17 +30,8 @@ export default function AdminOrganizers() {
 
   useEffect(load, [tab]);
 
-  const approve = async (id) => {
-    await api.put(`/admin/organizers/${id}/approve`);
-    load();
-  };
-
-  const remove = async (id) => {
-    if (window.confirm('Remove this organizer? This will delete all their events and bookings.')) {
-      await api.delete(`/admin/organizers/${id}`);
-      load();
-    }
-  };
+  const approve = async (id) => { await api.put(`/admin/organizers/${id}/approve`); load(); };
+  const remove = async (id) => { if (window.confirm('Remove this organizer? This will delete all their events and bookings.')) { await api.delete(`/admin/organizers/${id}`); load(); } };
 
   return (
     <DashboardLayout title="Organizer Approvals" links={links}>
@@ -89,11 +81,7 @@ export default function AdminOrganizers() {
                 </tr>
               ))}
               {!loading && organizers.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="py-8 text-center text-body">
-                    No {tab.toLowerCase()} organizers.
-                  </td>
-                </tr>
+                <tr><td colSpan={6} className="py-8 text-center text-body">No {tab.toLowerCase()} organizers.</td></tr>
               )}
             </tbody>
           </table>
