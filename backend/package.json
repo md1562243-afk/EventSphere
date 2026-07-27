@@ -4,11 +4,10 @@
   "description": "EventSphere API",
   "main": "server.js",
   "scripts": {
-    "seed": "node runSeed.js",
-    "start": "npm run seed && node server.js",
-    "dev": "npm run seed && nodemon server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "seed": "node database/runSeed.js",
+  "start": "npm run seed && node server.js",
+  "dev": "npm run seed && nodemon server.js"
+},
   "keywords": [
     "events",
     "booking",
