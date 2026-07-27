@@ -115,10 +115,14 @@ exports.deleteUser = async (req, res, next) => {
   }
 };
 
+// Hard delete organizer + all events + all bookings + all payments + browse records + phones
 exports.deleteOrganizer = async (req, res, next) => {
   try {
+    const organizer = await Organizer.findById(req.params.id);
+    if (!organizer) return res.status(404).json({ success: false, message: 'Organizer not found' });
+
     await Organizer.delete(req.params.id);
-    res.json({ success: true, message: 'Organizer removed' });
+    res.json({ success: true, message: 'Organizer and all related data removed' });
   } catch (err) {
     next(err);
   }
