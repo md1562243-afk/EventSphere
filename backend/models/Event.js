@@ -2,11 +2,11 @@ const pool = require('../config/database');
 
 const Event = {
   async create(data) {
-    const { event_name, event_type, event_date, event_time, event_venue, ticket_price, organizer_id, admin_id = null } = data;
+    const { event_name, event_type, event_date, event_time, event_venue, ticket_price, organizer_id, admin_id = null, status = 'Pending' } = data;
     const [result] = await pool.query(
-      `INSERT INTO Event (event_name, event_type, event_date, event_time, event_venue, ticket_price, organizer_id, admin_id)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [event_name, event_type, event_date, event_time, event_venue, ticket_price, organizer_id, admin_id]
+      `INSERT INTO Event (event_name, event_type, event_date, event_time, event_venue, ticket_price, organizer_id, admin_id, status)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [event_name, event_type, event_date, event_time, event_venue, ticket_price, organizer_id, admin_id, status]
     );
     return result.insertId;
   },
@@ -21,14 +21,14 @@ const Event = {
     return rows[0];
   },
 
-  // Public browse defaults to Organizer-created events only (admin_id IS NULL).
+  // Public browse defaults to Approved, non-custom events only.
   // Pass includeCustom: true for admin/organizer views that should see everything.
   async search({ q, type, date, venue, minPrice, maxPrice, sort, organizer_id, includeCustom = false, page = 1, limit = 12 }) {
     let query = 'SELECT e.*, o.first_name AS organizer_first_name, o.last_name AS organizer_last_name FROM Event e JOIN Organizer o ON e.organizer_id = o.organizer_id WHERE 1=1';
     const params = [];
 
     if (!includeCustom) {
-      query += ' AND e.admin_id IS NULL';
+      query += ' AND e.admin_id IS NULL AND e.status = "Approved"';
     }
 
     if (organizer_id) {
@@ -90,6 +90,10 @@ const Event = {
 
   async setSupervisor(event_id, admin_id) {
     await pool.query('UPDATE Event SET admin_id = ? WHERE event_id = ?', [admin_id, event_id]);
+  },
+
+  async setStatus(event_id, status, admin_id) {
+    await pool.query('UPDATE Event SET status = ?, admin_id = ? WHERE event_id = ?', [status, admin_id, event_id]);
   },
 
   async delete(event_id) {

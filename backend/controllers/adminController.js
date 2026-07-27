@@ -134,6 +134,18 @@ exports.listEvents = async (req, res, next) => {
   }
 };
 
+exports.approveEvent = async (req, res, next) => {
+  try {
+    const event = await Event.findById(req.params.id);
+    if (!event) return res.status(404).json({ success: false, message: 'Event not found' });
+
+    await Event.setStatus(req.params.id, 'Approved', req.auth.admin_id);
+    res.json({ success: true, message: 'Event approved' });
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.deleteEvent = async (req, res, next) => {
   try {
     await Event.delete(req.params.id);
@@ -169,6 +181,7 @@ exports.listPayments = async (req, res, next) => {
 // Confirming a payment on a custom-event booking also auto-creates the Event:
 // a random Approved organizer is picked, and event details (name, type, date,
 // time, venue) come straight from what the user submitted on the Booking.
+// The event is auto-Approved since an admin already reviewed it via payment.
 // If no Approved organizer exists yet, the payment still confirms — the event
 // just stays unassigned and the response flags it so the admin knows to fix it.
 exports.confirmPayment = async (req, res, next) => {
@@ -197,7 +210,8 @@ exports.confirmPayment = async (req, res, next) => {
           event_venue: booking.event_venue,
           ticket_price: total_cost > 0 ? total_cost : 0.01,
           organizer_id: organizer.organizer_id,
-          admin_id: req.auth.admin_id
+          admin_id: req.auth.admin_id,
+          status: 'Approved'
         });
 
         await Booking.assignEvent(payment.booking_id, event_id);

@@ -23,6 +23,7 @@ router.get('/users', adminController.listUsers);
 router.delete('/users/:id', adminController.deleteUser);
 
 router.get('/events', adminController.listEvents);
+router.put('/events/:id/approve', adminController.approveEvent);
 router.delete('/events/:id', adminController.deleteEvent);
 
 router.get('/bookings', adminController.listBookings);

@@ -67,6 +67,7 @@ CREATE TABLE IF NOT EXISTS Event (
   event_venue    VARCHAR(200) NOT NULL,
   ticket_price   DECIMAL(10,2) NOT NULL CHECK (ticket_price > 0),
   organizer_id   INT NOT NULL,
+  status         ENUM('Pending','Approved') NOT NULL DEFAULT 'Pending',
   admin_id       INT NULL,
   FOREIGN KEY (organizer_id) REFERENCES Organizer(organizer_id)
     ON UPDATE CASCADE ON DELETE RESTRICT,

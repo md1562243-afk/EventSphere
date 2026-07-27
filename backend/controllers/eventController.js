@@ -1,7 +1,7 @@
 const Event = require('../models/Event');
 const { missingFields, isPositiveNumber, isFutureDate } = require('../utils/validation');
 
-// Public browse — every event is visible as soon as an organizer creates it.
+// Public browse — only Approved, non-custom events are visible.
 exports.browse = async (req, res, next) => {
   try {
     const { q, type, date, venue, minPrice, maxPrice, sort, page, limit } = req.query;
@@ -43,13 +43,14 @@ exports.create = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Event date cannot be in the past' });
     }
 
-    // Event becomes browsable/bookable immediately — organizers don't need admin approval to publish.
+    // Event is created as Pending — requires admin approval before it's browsable/bookable.
     const event_id = await Event.create({
       event_name, event_type, event_date, event_time, event_venue, ticket_price,
-      organizer_id: req.auth.organizer_id
+      organizer_id: req.auth.organizer_id,
+      status: 'Pending'
     });
 
-    res.status(201).json({ success: true, message: 'Event created and is now live', event_id });
+    res.status(201).json({ success: true, message: 'Event submitted and is awaiting admin approval', event_id });
   } catch (err) {
     next(err);
   }
@@ -69,8 +70,11 @@ exports.update = async (req, res, next) => {
       if (req.body[field] !== undefined) updates[field] = req.body[field];
     }
 
+    // Any edit sends the event back to Pending for re-review.
+    updates.status = 'Pending';
+
     await Event.update(req.params.id, updates);
-    res.json({ success: true, message: 'Event updated' });
+    res.json({ success: true, message: 'Event updated and is awaiting admin re-approval' });
   } catch (err) {
     next(err);
   }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import DashboardLayout from '../../components/DashboardLayout';
+import StatusBadge from '../../components/StatusBadge';
 import api from '../../api/axios';
 import { formatTime12hr } from '../../utils/formatTime';
 
@@ -24,6 +25,11 @@ export default function AdminEvents() {
 
   useEffect(load, []);
 
+  const approve = async (id) => {
+    await api.put(`/admin/events/${id}/approve`);
+    load();
+  };
+
   const remove = async (id) => {
     if (window.confirm('Delete this event?')) {
       await api.delete(`/admin/events/${id}`);
@@ -34,7 +40,7 @@ export default function AdminEvents() {
   return (
     <DashboardLayout title="Supervise Events" links={links}>
       <p className="text-sm text-body mb-5">
-        Every event organizers create is live immediately — there's no approval step. You can review and delete events here if necessary.
+        Organizer-created events require approval before they appear on the public site.
       </p>
 
       <div className="card overflow-hidden">
@@ -50,6 +56,7 @@ export default function AdminEvents() {
                 <th className="py-3 px-4">Venue</th>
                 <th className="py-3 px-4">Price</th>
                 <th className="py-3 px-4">Organizer ID</th>
+                <th className="py-3 px-4">Status</th>
                 <th className="py-3 px-4"></th>
               </tr>
             </thead>
@@ -64,13 +71,19 @@ export default function AdminEvents() {
                   <td className="py-3 px-4">{e.event_venue}</td>
                   <td className="py-3 px-4">৳{Number(e.ticket_price).toLocaleString()}</td>
                   <td className="py-3 px-4">#{e.organizer_id}</td>
+                  <td className="py-3 px-4"><StatusBadge status={e.status} /></td>
                   <td className="py-3 px-4">
-                    <button onClick={() => remove(e.event_id)} className="text-errorc text-xs font-semibold hover:underline">Delete</button>
+                    <div className="flex gap-3 text-xs font-semibold">
+                      {e.status === 'Pending' && (
+                        <button onClick={() => approve(e.event_id)} className="text-success hover:underline">Approve</button>
+                      )}
+                      <button onClick={() => remove(e.event_id)} className="text-errorc hover:underline">Delete</button>
+                    </div>
                   </td>
                 </tr>
               ))}
               {!loading && events.length === 0 && (
-                <tr><td colSpan={9} className="py-8 text-center text-body">No events yet.</td></tr>
+                <tr><td colSpan={10} className="py-8 text-center text-body">No events yet.</td></tr>
               )}
             </tbody>
           </table>
