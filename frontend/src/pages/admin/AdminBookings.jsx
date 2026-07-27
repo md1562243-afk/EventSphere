@@ -11,7 +11,8 @@ const links = [
   { to: '/admin/events', label: 'Events' },
   { to: '/admin/bookings', label: 'Bookings' },
   { to: '/admin/payments', label: 'Payments' },
-  { to: '/admin/create-admin', label: 'Add Admin' }
+  { to: '/admin/create-admin', label: 'Add Admin' },
+  { to: '/admin/profile', label: 'Profile' }
 ];
 
 export default function AdminBookings() {

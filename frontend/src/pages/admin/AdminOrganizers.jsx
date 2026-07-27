@@ -5,16 +5,16 @@ import api from '../../api/axios';
 
 const links = [
   { to: '/admin/dashboard', label: 'Overview', end: true },
-  { to: '/admin/profile', label: 'My Profile' },
   { to: '/admin/organizers', label: 'Organizers' },
   { to: '/admin/users', label: 'Users' },
   { to: '/admin/events', label: 'Events' },
   { to: '/admin/bookings', label: 'Bookings' },
   { to: '/admin/payments', label: 'Payments' },
-  { to: '/admin/create-admin', label: 'Add Admin' }
+  { to: '/admin/create-admin', label: 'Add Admin' },
+  { to: '/admin/profile', label: 'Profile' }
 ];
 
-const TABS = ['Pending', 'Approved'];
+const TABS = ['Pending', 'Approved', 'Rejected'];
 
 export default function AdminOrganizers() {
   const [tab, setTab] = useState('Pending');
@@ -23,15 +23,14 @@ export default function AdminOrganizers() {
 
   const load = () => {
     setLoading(true);
-    api.get('/admin/organizers', { params: { status: tab } })
-      .then((res) => setOrganizers(res.data.organizers))
-      .finally(() => setLoading(false));
+    api.get('/admin/organizers', { params: { status: tab } }).then((res) => setOrganizers(res.data.organizers)).finally(() => setLoading(false));
   };
 
   useEffect(load, [tab]);
 
   const approve = async (id) => { await api.put(`/admin/organizers/${id}/approve`); load(); };
-  const remove = async (id) => { if (window.confirm('Remove this organizer? This will delete all their events and bookings.')) { await api.delete(`/admin/organizers/${id}`); load(); } };
+  const reject = async (id) => { await api.put(`/admin/organizers/${id}/reject`); load(); };
+  const remove = async (id) => { if (window.confirm('Remove this organizer?')) { await api.delete(`/admin/organizers/${id}`); load(); } };
 
   return (
     <DashboardLayout title="Organizer Approvals" links={links}>
@@ -73,9 +72,12 @@ export default function AdminOrganizers() {
                   <td className="py-3 px-4">
                     <div className="flex gap-3 text-xs font-semibold">
                       {o.status === 'Pending' && (
-                        <button onClick={() => approve(o.organizer_id)} className="text-success hover:underline">Approve</button>
+                        <>
+                          <button onClick={() => approve(o.organizer_id)} className="text-success hover:underline">Approve</button>
+                          <button onClick={() => reject(o.organizer_id)} className="text-errorc hover:underline">Reject</button>
+                        </>
                       )}
-                      <button onClick={() => remove(o.organizer_id)} className="text-errorc hover:underline">Remove</button>
+                      <button onClick={() => remove(o.organizer_id)} className="text-body hover:underline">Remove</button>
                     </div>
                   </td>
                 </tr>

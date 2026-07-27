@@ -32,13 +32,13 @@ import OrganizerBookings from './pages/organizer/OrganizerBookings';
 import OrganizerProfile from './pages/organizer/OrganizerProfile';
 
 import AdminDashboard from './pages/admin/AdminDashboard';
-import AdminProfile from './pages/admin/AdminProfile';
 import AdminOrganizers from './pages/admin/AdminOrganizers';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminEvents from './pages/admin/AdminEvents';
 import AdminBookings from './pages/admin/AdminBookings';
 import AdminPayments from './pages/admin/AdminPayments';
 import AdminCreateAdmin from './pages/admin/AdminCreateAdmin';
+import AdminProfile from './pages/admin/AdminProfile';
 
 export default function App() {
   return (
@@ -57,13 +57,13 @@ export default function App() {
       <Route path="/organizer/profile" element={<ProtectedRoute role="Organizer"><OrganizerProfile /></ProtectedRoute>} />
 
       <Route path="/admin/dashboard" element={<ProtectedRoute role="Admin"><AdminDashboard /></ProtectedRoute>} />
-      <Route path="/admin/profile" element={<ProtectedRoute role="Admin"><AdminProfile /></ProtectedRoute>} />
       <Route path="/admin/organizers" element={<ProtectedRoute role="Admin"><AdminOrganizers /></ProtectedRoute>} />
       <Route path="/admin/users" element={<ProtectedRoute role="Admin"><AdminUsers /></ProtectedRoute>} />
       <Route path="/admin/events" element={<ProtectedRoute role="Admin"><AdminEvents /></ProtectedRoute>} />
       <Route path="/admin/bookings" element={<ProtectedRoute role="Admin"><AdminBookings /></ProtectedRoute>} />
       <Route path="/admin/payments" element={<ProtectedRoute role="Admin"><AdminPayments /></ProtectedRoute>} />
       <Route path="/admin/create-admin" element={<ProtectedRoute role="Admin"><AdminCreateAdmin /></ProtectedRoute>} />
+      <Route path="/admin/profile" element={<ProtectedRoute role="Admin"><AdminProfile /></ProtectedRoute>} />
 
       {/* Public site with navbar/footer */}
       <Route

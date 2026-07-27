@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import DashboardLayout from '../../components/DashboardLayout';
 import StatusBadge from '../../components/StatusBadge';
 import api from '../../api/axios';
-import { formatTime12hr } from '../../utils/formatTime';
 
 const links = [
   { to: '/admin/dashboard', label: 'Overview', end: true },
@@ -11,7 +10,8 @@ const links = [
   { to: '/admin/events', label: 'Events' },
   { to: '/admin/bookings', label: 'Bookings' },
   { to: '/admin/payments', label: 'Payments' },
-  { to: '/admin/create-admin', label: 'Add Admin' }
+  { to: '/admin/create-admin', label: 'Add Admin' },
+  { to: '/admin/profile', label: 'Profile' }
 ];
 
 export default function AdminEvents() {
@@ -47,9 +47,6 @@ export default function AdminEvents() {
                 <th className="py-3 px-4">Event ID</th>
                 <th className="py-3 px-4">Event Name</th>
                 <th className="py-3 px-4">Type</th>
-                <th className="py-3 px-4">Date</th>
-                <th className="py-3 px-4">Time</th>
-                <th className="py-3 px-4">Venue</th>
                 <th className="py-3 px-4">Price</th>
                 <th className="py-3 px-4">Organizer ID</th>
                 <th className="py-3 px-4">Status</th>
@@ -62,15 +59,12 @@ export default function AdminEvents() {
                   <td className="py-3 px-4 text-body">#{e.event_id}</td>
                   <td className="py-3 px-4 font-medium text-heading">{e.event_name}</td>
                   <td className="py-3 px-4">{e.event_type}</td>
-                  <td className="py-3 px-4">{e.event_date}</td>
-                  <td className="py-3 px-4">{formatTime12hr(e.event_time)}</td>
-                  <td className="py-3 px-4">{e.event_venue}</td>
                   <td className="py-3 px-4">৳{Number(e.ticket_price).toLocaleString()}</td>
                   <td className="py-3 px-4">#{e.organizer_id}</td>
-                  <td className="py-3 px-4"><StatusBadge status={e.status} /></td>
+                  <td className="py-3 px-4"><StatusBadge status={e.event_status} /></td>
                   <td className="py-3 px-4">
                     <div className="flex gap-3 text-xs font-semibold">
-                      {e.status === 'Pending' && (
+                      {e.event_status === 'Pending' && (
                         <button onClick={() => approve(e.event_id)} className="text-success hover:underline">Approve</button>
                       )}
                       <button onClick={() => remove(e.event_id)} className="text-errorc hover:underline">Delete</button>
@@ -79,7 +73,7 @@ export default function AdminEvents() {
                 </tr>
               ))}
               {!loading && events.length === 0 && (
-                <tr><td colSpan={10} className="py-8 text-center text-body">No events yet.</td></tr>
+                <tr><td colSpan={7} className="py-8 text-center text-body">No events yet.</td></tr>
               )}
             </tbody>
           </table>
