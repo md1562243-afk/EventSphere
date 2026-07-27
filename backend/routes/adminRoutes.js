@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { authenticate, authorize } = require('../middleware/auth');
+const auth = require('../middleware/auth');
+const { requireAdmin } = require('../middleware/verifyRole');
 const adminController = require('../controllers/adminController');
 
 // Public
 router.post('/login', adminController.login);
 
 // Protected — Admin only
-router.use(authenticate, authorize('Admin'));
+router.use(auth, requireAdmin);
 
 router.post('/create', adminController.createAdmin);
 router.get('/all', adminController.listAdmins);

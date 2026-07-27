@@ -1,14 +1,20 @@
-function verifyRole(...allowedRoles) {
-  return (req, res, next) => {
-    if (!req.auth || !allowedRoles.includes(req.auth.role)) {
-      return res.status(403).json({ success: false, message: 'Access denied for this role' });
-    }
-    next();
-  };
-}
+exports.verifyOrganizer = (req, res, next) => {
+  if (req.auth?.role !== 'Organizer') {
+    return res.status(403).json({ success: false, message: 'Organizer access required' });
+  }
+  next();
+};
 
-const verifyUser = verifyRole('User');
-const verifyOrganizer = verifyRole('Organizer');
-const verifyAdmin = verifyRole('Admin');
+exports.verifyUser = (req, res, next) => {
+  if (req.auth?.role !== 'User') {
+    return res.status(403).json({ success: false, message: 'User access required' });
+  }
+  next();
+};
 
-module.exports = { verifyRole, verifyUser, verifyOrganizer, verifyAdmin };
+exports.requireAdmin = (req, res, next) => {
+  if (req.auth?.role !== 'Admin') {
+    return res.status(403).json({ success: false, message: 'Admin access required' });
+  }
+  next();
+};
