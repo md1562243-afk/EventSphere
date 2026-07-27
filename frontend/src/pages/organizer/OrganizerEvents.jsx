@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { Pencil, Trash2, Plus } from 'lucide-react';
 import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
-import { formatTime12hr } from '../../utils/formatTime';
 
 const links = [
   { to: '/organizer/dashboard', label: 'Overview', end: true },
@@ -45,9 +44,6 @@ export default function OrganizerEvents() {
                 <th className="py-3 px-4">ID</th>
                 <th className="py-3 px-4">Event</th>
                 <th className="py-3 px-4">Type</th>
-                <th className="py-3 px-4">Date</th>
-                <th className="py-3 px-4">Time</th>
-                <th className="py-3 px-4">Venue</th>
                 <th className="py-3 px-4">Price</th>
                 <th className="py-3 px-4"></th>
               </tr>
@@ -58,9 +54,6 @@ export default function OrganizerEvents() {
                   <td className="py-3 px-4 text-body">#{e.event_id}</td>
                   <td className="py-3 px-4 font-medium text-heading">{e.event_name}</td>
                   <td className="py-3 px-4">{e.event_type}</td>
-                  <td className="py-3 px-4">{e.event_date}</td>
-                  <td className="py-3 px-4">{formatTime12hr(e.event_time)}</td>
-                  <td className="py-3 px-4">{e.event_venue}</td>
                   <td className="py-3 px-4">৳{Number(e.ticket_price).toLocaleString()}</td>
                   <td className="py-3 px-4">
                     <div className="flex gap-3">
@@ -71,7 +64,7 @@ export default function OrganizerEvents() {
                 </tr>
               ))}
               {!loading && events.length === 0 && (
-                <tr><td colSpan={8} className="py-8 text-center text-body">No events yet. Create your first one!</td></tr>
+                <tr><td colSpan={5} className="py-8 text-center text-body">No events yet. Create your first one!</td></tr>
               )}
             </tbody>
           </table>
