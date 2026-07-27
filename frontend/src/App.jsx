@@ -32,6 +32,7 @@ import OrganizerBookings from './pages/organizer/OrganizerBookings';
 import OrganizerProfile from './pages/organizer/OrganizerProfile';
 
 import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminProfile from './pages/admin/AdminProfile';
 import AdminOrganizers from './pages/admin/AdminOrganizers';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminEvents from './pages/admin/AdminEvents';
@@ -56,6 +57,7 @@ export default function App() {
       <Route path="/organizer/profile" element={<ProtectedRoute role="Organizer"><OrganizerProfile /></ProtectedRoute>} />
 
       <Route path="/admin/dashboard" element={<ProtectedRoute role="Admin"><AdminDashboard /></ProtectedRoute>} />
+      <Route path="/admin/profile" element={<ProtectedRoute role="Admin"><AdminProfile /></ProtectedRoute>} />
       <Route path="/admin/organizers" element={<ProtectedRoute role="Admin"><AdminOrganizers /></ProtectedRoute>} />
       <Route path="/admin/users" element={<ProtectedRoute role="Admin"><AdminUsers /></ProtectedRoute>} />
       <Route path="/admin/events" element={<ProtectedRoute role="Admin"><AdminEvents /></ProtectedRoute>} />
