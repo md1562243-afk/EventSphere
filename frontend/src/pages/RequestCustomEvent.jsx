@@ -50,6 +50,12 @@ export default function RequestCustomEvent() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="card p-6 sm:p-8 space-y-5">
         <div>
+          <label className="block text-sm font-medium text-heading mb-1">Event Name</label>
+          <input className="input-field" placeholder="e.g. Sarah & Tom's Wedding" {...register('event_name', { required: true })} />
+          {errors.event_name && <p className="text-errorc text-xs mt-1">Event name is required</p>}
+        </div>
+
+        <div>
           <label className="block text-sm font-medium text-heading mb-1">Event Type</label>
           <select className="input-field" {...register('event_type', { required: true })}>
             <option value="" disabled>Select a category...</option>
@@ -72,11 +78,6 @@ export default function RequestCustomEvent() {
         <div>
           <label className="block text-sm font-medium text-heading mb-1">Venue</label>
           <input className="input-field" placeholder="Preferred venue or area" {...register('venue', { required: true })} />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-heading mb-1">Total Attendance</label>
-          <input type="number" min={1} className="input-field" {...register('expected_attendees', { required: true, min: 1 })} />
         </div>
 
         <div>
