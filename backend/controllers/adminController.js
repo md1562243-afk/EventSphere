@@ -79,13 +79,43 @@ exports.deleteAdmin = async (req, res, next) => {
     const admin = await Admin.findById(req.params.id);
     if (!admin) return res.status(404).json({ success: false, message: 'Admin not found' });
 
-    // BLOCK: Seed admin can never be deleted
     if (admin.email === SEED_ADMIN_EMAIL) {
       return res.status(403).json({ success: false, message: 'Seed admin cannot be deleted' });
     }
 
     await Admin.delete(req.params.id);
     res.json({ success: true, message: 'Admin removed' });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ---------- Admin Profile & Phones ----------
+exports.getProfile = async (req, res, next) => {
+  try {
+    const admin = await Admin.findById(req.auth.admin_id);
+    const phones = await Admin.getPhones(req.auth.admin_id);
+    res.json({ success: true, admin: { ...admin, phones } });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.addPhone = async (req, res, next) => {
+  try {
+    const { phone_no } = req.body;
+    if (!phone_no) return res.status(400).json({ success: false, message: 'Phone number required' });
+    await Admin.addPhone(req.auth.admin_id, phone_no);
+    res.json({ success: true, message: 'Phone number added' });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.removePhone = async (req, res, next) => {
+  try {
+    await Admin.removePhone(req.auth.admin_id, req.params.phone);
+    res.json({ success: true, message: 'Phone number removed' });
   } catch (err) {
     next(err);
   }

@@ -14,6 +14,11 @@ router.post('/create', adminController.createAdmin);
 router.get('/all', adminController.listAdmins);
 router.delete('/:id', adminController.deleteAdmin);
 
+// Admin profile & phones
+router.get('/profile', adminController.getProfile);
+router.post('/phones', adminController.addPhone);
+router.delete('/phones/:phone', adminController.removePhone);
+
 router.get('/organizers', adminController.listOrganizers);
 router.put('/organizers/:id/approve', adminController.approveOrganizer);
 router.put('/organizers/:id/reject', adminController.rejectOrganizer);
