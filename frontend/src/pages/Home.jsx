@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Search, CalendarCheck, Sparkles, ShieldCheck, Users, TrendingUp } from 'lucide-react';
+import { ArrowRight, Search, CalendarCheck, Sparkles } from 'lucide-react';
 import api from '../api/axios';
 import EventCard from '../components/EventCard';
 
@@ -9,13 +9,6 @@ const steps = [
   { icon: Search, title: 'Browse', desc: 'Explore approved events by type, date, or venue near you.' },
   { icon: CalendarCheck, title: 'Book', desc: 'Reserve your seats or request a fully custom event in minutes.' },
   { icon: Sparkles, title: 'Organize', desc: 'Organizers bring your event to life, verified every step by our team.' }
-];
-
-const stats = [
-  { icon: Users, label: 'Active Users', value: '12,400+' },
-  { icon: CalendarCheck, label: 'Events Hosted', value: '3,150+' },
-  { icon: ShieldCheck, label: 'Verified Organizers', value: '480+' },
-  { icon: TrendingUp, label: 'Avg. Rating', value: '4.8/5' }
 ];
 
 export default function Home() {
@@ -34,16 +27,16 @@ export default function Home() {
         <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-primary/20 blur-3xl" />
         <div className="absolute top-32 -right-16 h-72 w-72 rounded-full bg-secondary/20 blur-3xl" />
 
-        <div className="container-app relative py-20 lg:py-28 grid lg:grid-cols-2 gap-12 items-center">
+        <div className="container-app relative py-20 lg:py-28 flex flex-col items-center text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             <span className="badge bg-white text-primary shadow-soft mb-5">✨ Premium Event Platform</span>
             <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight mb-5">
               Discover <span className="text-primary">•</span> Book <span className="text-secondary">•</span> Organize
             </h1>
-            <p className="text-body text-lg mb-8 max-w-md">
+            <p className="text-body text-lg mb-8 max-w-md mx-auto">
               Browse exciting public events or request your own custom event — all in one platform.
             </p>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-4 justify-center">
               <Link to="/events" className="btn-primary flex items-center gap-2">
                 Explore Events <ArrowRight size={16} />
               </Link>
@@ -51,37 +44,6 @@ export default function Home() {
                 Request Custom Event
               </Link>
             </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.15 }}
-            className="relative h-80 sm:h-96"
-          >
-            <div className="glass card absolute top-0 left-6 w-56 p-4 shadow-soft">
-              <p className="text-xs text-body mb-1">Tech Summit 2026</p>
-              <p className="font-bold text-heading text-sm">Dec 12 · Dhaka</p>
-              <p className="text-xs text-success mt-2">128 seats left</p>
-            </div>
-            <motion.div
-              animate={{ y: [0, -12, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-              className="glass card absolute top-24 right-2 w-52 p-4 shadow-soft"
-            >
-              <p className="text-xs text-body mb-1">Music Fest</p>
-              <p className="font-bold text-heading text-sm">Jan 8 · Chattogram</p>
-              <p className="text-xs text-pendingc mt-2">Selling fast</p>
-            </motion.div>
-            <motion.div
-              animate={{ y: [0, 10, 0] }}
-              transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-              className="glass card absolute bottom-2 left-16 w-56 p-4 shadow-soft"
-            >
-              <p className="text-xs text-body mb-1">Startup Meetup</p>
-              <p className="font-bold text-heading text-sm">Feb 2 · Sylhet</p>
-              <p className="text-xs text-primary mt-2">Free entry</p>
-            </motion.div>
           </motion.div>
         </div>
       </section>
@@ -130,19 +92,6 @@ export default function Home() {
               </motion.div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Stats */}
-      <section className="py-20">
-        <div className="container-app grid grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((s) => (
-            <div key={s.label} className="card p-6 text-center">
-              <s.icon className="mx-auto text-secondary mb-3" size={22} />
-              <p className="text-2xl font-extrabold text-heading">{s.value}</p>
-              <p className="text-sm text-body">{s.label}</p>
-            </div>
-          ))}
         </div>
       </section>
 
