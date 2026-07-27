@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { CalendarDays, MapPin, Ticket, Share2, ArrowLeft } from 'lucide-react';
+import { Ticket, Share2, ArrowLeft, CalendarDays, MapPin, Clock } from 'lucide-react';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import { formatTime12hr } from '../utils/formatTime';
@@ -14,6 +14,9 @@ export default function EventDetails() {
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [method, setMethod] = useState('bKash');
+  const [eventDate, setEventDate] = useState('');
+  const [eventTime, setEventTime] = useState('');
+  const [eventVenue, setEventVenue] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState(null);
 
@@ -24,21 +27,33 @@ export default function EventDetails() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  const isBookingClosed = (() => {
-    if (!event) return false;
-    const eventDateTime = new Date(`${event.event_date}T${event.event_time}`);
-    return new Date() > eventDateTime;
-  })();
-
   const handleBook = async () => {
     if (!isAuthenticated || role !== 'User') {
       navigate('/login/user');
       return;
     }
+    if (!eventDate || !eventTime || !eventVenue) {
+      setMessage({ type: 'error', text: 'Please fill in event date, time and venue' });
+      return;
+    }
+    const selectedDate = new Date(eventDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (selectedDate < today) {
+      setMessage({ type: 'error', text: 'Event date cannot be in the past' });
+      return;
+    }
+
     setSubmitting(true);
     setMessage(null);
     try {
-      const res = await api.post('/users/bookings', { event_id: Number(id), payment_method: method });
+      const res = await api.post('/users/bookings', {
+        event_id: Number(id),
+        event_date: eventDate,
+        event_time: eventTime,
+        event_venue: eventVenue,
+        payment_method: method
+      });
       setMessage({ type: 'success', text: `Booking created! Total ৳${res.data.total_amount}. Payment is pending admin verification.` });
     } catch (err) {
       setMessage({ type: 'error', text: err.response?.data?.message || 'Booking failed' });
@@ -61,18 +76,17 @@ export default function EventDetails() {
           <span className="badge bg-primary/10 text-primary mb-3">{event.event_type}</span>
           <h1 className="text-3xl mb-4">{event.event_name}</h1>
 
-          <div className="flex flex-wrap gap-6 text-sm text-body mb-6">
-            <span className="flex items-center gap-2">
-              <CalendarDays size={16} /> {event.event_date} · {formatTime12hr(event.event_time)}
-            </span>
-            <span className="flex items-center gap-2">
-              <MapPin size={16} /> {event.event_venue}
-            </span>
+          <div className="card p-6 mb-6">
+            <h3 className="font-bold mb-2">Organizer</h3>
+            <p className="text-body text-sm">{event.organizer_first_name} {event.organizer_last_name} (ID #{event.organizer_id})</p>
           </div>
 
           <div className="card p-6">
-            <h3 className="font-bold mb-2">Organizer</h3>
-            <p className="text-body text-sm">{event.organizer_first_name} {event.organizer_last_name} (ID #{event.organizer_id})</p>
+            <h3 className="font-bold mb-3">About this event type</h3>
+            <p className="text-body text-sm leading-relaxed">
+              This is a {event.event_type.toLowerCase()} event package starting at ৳{Number(event.ticket_price).toLocaleString()}.
+              Select your preferred date, time and venue to book this package for your own occasion.
+            </p>
           </div>
         </div>
 
@@ -87,34 +101,62 @@ export default function EventDetails() {
               </button>
             </div>
 
-            {!isBookingClosed && (
-              <>
-                <label className="block text-sm font-medium text-heading mb-1">Payment method</label>
-                <select className="input-field mb-4" value={method} onChange={(e) => setMethod(e.target.value)}>
-                  {METHODS.map((m) => <option key={m} value={m}>{m}</option>)}
-                </select>
-
-                <div className="flex items-center justify-between mb-5 text-sm">
-                  <span className="text-body">Total</span>
-                  <span className="font-bold text-heading">৳{Number(event.ticket_price).toLocaleString()}</span>
+            <div className="space-y-3 mb-4">
+              <div>
+                <label className="block text-xs font-medium text-body mb-1">Event Date</label>
+                <div className="relative">
+                  <CalendarDays size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="date"
+                    className="input-field pl-9"
+                    value={eventDate}
+                    onChange={(e) => setEventDate(e.target.value)}
+                  />
                 </div>
-              </>
-            )}
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-body mb-1">Event Time</label>
+                <div className="relative">
+                  <Clock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="time"
+                    className="input-field pl-9"
+                    value={eventTime}
+                    onChange={(e) => setEventTime(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-body mb-1">Venue</label>
+                <div className="relative">
+                  <MapPin size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="text"
+                    className="input-field pl-9"
+                    placeholder="Enter venue address"
+                    value={eventVenue}
+                    onChange={(e) => setEventVenue(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <label className="block text-sm font-medium text-heading mb-1">Payment method</label>
+            <select className="input-field mb-4" value={method} onChange={(e) => setMethod(e.target.value)}>
+              {METHODS.map((m) => <option key={m} value={m}>{m}</option>)}
+            </select>
+
+            <div className="flex items-center justify-between mb-5 text-sm">
+              <span className="text-body">Total</span>
+              <span className="font-bold text-heading">৳{Number(event.ticket_price).toLocaleString()}</span>
+            </div>
 
             {message && (
               <p className={`text-sm mb-4 ${message.type === 'error' ? 'text-errorc' : 'text-success'}`}>{message.text}</p>
             )}
 
-            <button
-              onClick={handleBook}
-              disabled={submitting || isBookingClosed}
-              className={`w-full text-center disabled:opacity-60 disabled:cursor-not-allowed ${
-                isBookingClosed
-                  ? 'bg-slate-300 text-slate-600 font-semibold py-3 rounded-xl'
-                  : 'btn-accent'
-              }`}
-            >
-              {isBookingClosed ? 'Booking Closed' : submitting ? 'Booking...' : 'Book Now'}
+            <button onClick={handleBook} disabled={submitting} className="btn-accent w-full text-center disabled:opacity-60">
+              {submitting ? 'Booking...' : 'Book Now'}
             </button>
           </div>
         </div>

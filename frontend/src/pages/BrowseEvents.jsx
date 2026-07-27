@@ -8,8 +8,7 @@ import { Link } from 'react-router-dom';
 const SORT_OPTIONS = [
   { value: 'newest', label: 'Newest' },
   { value: 'lowest_price', label: 'Lowest Price' },
-  { value: 'highest_price', label: 'Highest Price' },
-  { value: 'upcoming', label: 'Nearest Date' }
+  { value: 'highest_price', label: 'Highest Price' }
 ];
 
 const EVENT_TYPES = [
@@ -22,7 +21,7 @@ export default function BrowseEvents() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
-  const [filters, setFilters] = useState({ q: '', type: '', date: '', venue: '', minPrice: '', maxPrice: '', sort: 'newest' });
+  const [filters, setFilters] = useState({ q: '', type: '', minPrice: '', maxPrice: '', sort: 'newest' });
 
   const fetchEvents = async () => {
     setLoading(true);
@@ -48,7 +47,7 @@ export default function BrowseEvents() {
     <div className="container-app py-12">
       <div className="mb-8">
         <h1 className="text-3xl mb-2">Browse Events</h1>
-        <p className="text-body">Find your next experience from approved events across the platform.</p>
+        <p className="text-body">Find your next experience from approved event packages across the platform.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="card p-4 sm:p-5 mb-8">
@@ -69,9 +68,7 @@ export default function BrowseEvents() {
         </div>
 
         {showFilters && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mt-4 pt-4 border-t border-slate-100">
-            <input className="input-field" placeholder="Venue" value={filters.venue} onChange={(e) => setFilters({ ...filters, venue: e.target.value })} />
-            <input type="date" className="input-field" value={filters.date} onChange={(e) => setFilters({ ...filters, date: e.target.value })} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-4 pt-4 border-t border-slate-100">
             <select className="input-field" value={filters.type} onChange={(e) => setFilters({ ...filters, type: e.target.value })}>
               <option value="">All event types</option>
               {EVENT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}

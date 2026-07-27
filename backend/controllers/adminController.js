@@ -115,7 +115,7 @@ exports.deleteUser = async (req, res, next) => {
   }
 };
 
-// Hard delete organizer + all events + all bookings + all payments + browse records + phones
+// Hard delete organizer + cascade
 exports.deleteOrganizer = async (req, res, next) => {
   try {
     const organizer = await Organizer.findById(req.params.id);
@@ -175,19 +175,14 @@ exports.listBookings = async (req, res, next) => {
 // ---------- Payments ----------
 exports.listPayments = async (req, res, next) => {
   try {
-    const payments = await Payment.all(req.query.status);
+    const payments = await Payment.all();
     res.json({ success: true, payments });
   } catch (err) {
     next(err);
   }
 };
 
-// Confirming a payment on a custom-event booking also auto-creates the Event:
-// a random Approved organizer is picked, and event details (name, type, date,
-// time, venue) come straight from what the user submitted on the Booking.
-// The event is auto-Approved since an admin already reviewed it via payment.
-// If no Approved organizer exists yet, the payment still confirms — the event
-// just stays unassigned and the response flags it so the admin knows to fix it.
+// Confirming a payment approves the Booking and the linked Event (if still Pending).
 exports.confirmPayment = async (req, res, next) => {
   try {
     const payment = await Payment.findById(req.params.id);
@@ -197,41 +192,18 @@ exports.confirmPayment = async (req, res, next) => {
     await Booking.setStatus(payment.booking_id, 'Confirmed', req.auth.admin_id);
 
     const booking = await Booking.findById(payment.booking_id);
-    let warning = null;
-
-    if (booking && !booking.event_id) {
-      const organizer = await Organizer.randomApproved();
-
-      if (organizer) {
-        const { paid, due } = await Payment.paidAndDue(booking.booking_id);
-        const total_cost = Number(paid) + Number(due);
-
-        const event_id = await Event.create({
-          event_name: booking.event_name || `Custom Event #${booking.booking_id}`,
-          event_type: booking.event_type || 'Other',
-          event_date: booking.event_date,
-          event_time: booking.event_time,
-          event_venue: booking.event_venue,
-          ticket_price: total_cost > 0 ? total_cost : 0.01,
-          organizer_id: organizer.organizer_id,
-          admin_id: req.auth.admin_id,
-          status: 'Approved'
-        });
-
-        await Booking.assignEvent(payment.booking_id, event_id);
-
-        emailService.organizerCustomEventAssigned(organizer.email, booking.event_type || 'Custom Event');
-        emailService.userOrganizerAssigned(booking.user_email, booking.event_type || 'Custom Event');
-      } else {
-        warning = 'Payment confirmed, but no Approved organizer exists yet — this event has no organizer assigned.';
+    if (booking && booking.event_id) {
+      const event = await Event.findById(booking.event_id);
+      if (event && event.event_status === 'Pending') {
+        await Event.setStatus(event.event_id, 'Approved', req.auth.admin_id);
       }
     }
 
     if (booking) {
-      emailService.userPaymentConfirmed(booking.user_email, booking.event_name || 'your event');
+      emailService.userPaymentConfirmed(booking.user_email || '', 'your event');
     }
 
-    res.json({ success: true, message: 'Payment confirmed', warning });
+    res.json({ success: true, message: 'Payment confirmed' });
   } catch (err) {
     next(err);
   }
@@ -242,12 +214,12 @@ exports.dashboard = async (req, res, next) => {
   try {
     const [
       total_users, total_organizers, pending_organizers,
-      pending_payments, total_events, revenue
+      pending_bookings, total_events, revenue
     ] = await Promise.all([
       User.count(),
       Organizer.count(),
       Organizer.countByStatus('Pending'),
-      Payment.countByStatus('Pending'),
+      Booking.all({ status: 'Pending' }).then(b => b.length),
       Event.countAll(),
       Payment.totalRevenue()
     ]);
@@ -258,7 +230,7 @@ exports.dashboard = async (req, res, next) => {
         total_users,
         total_organizers,
         pending_organizer_requests: pending_organizers,
-        pending_payments,
+        pending_bookings,
         total_revenue: revenue,
         total_events
       }

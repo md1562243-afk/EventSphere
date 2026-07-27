@@ -1,103 +1,57 @@
 const pool = require('../config/database');
 
-function nowInDhaka() {
-  const now = new Date();
-  const parts = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Asia/Dhaka',
-    year: 'numeric', month: '2-digit', day: '2-digit',
-    hour: '2-digit', minute: '2-digit', second: '2-digit',
-    hour12: false
-  }).formatToParts(now);
-
-  const get = (type) => parts.find((p) => p.type === type).value;
-  const date = `${get('year')}-${get('month')}-${get('day')}`;
-  const time = `${get('hour')}:${get('minute')}:${get('second')}`;
-  return { date, time };
-}
-
 const Payment = {
   async create({ payment_method, payment_amount, booking_id }) {
-    const { date, time } = nowInDhaka();
     const [result] = await pool.query(
-      `INSERT INTO Payment (payment_date, payment_time, payment_method, payment_status, payment_amount, booking_id)
-       VALUES (?, ?, ?, 'Pending', ?, ?)`,
-      [date, time, payment_method, payment_amount, booking_id]
+      `INSERT INTO Payment (payment_method, payment_amount, booking_id)
+       VALUES (?, ?, ?)`,
+      [payment_method, payment_amount, booking_id]
     );
     return result.insertId;
   },
 
   async findById(payment_id) {
-    const [rows] = await pool.query(
-      `SELECT p.*, b.user_id, b.event_id, e.event_name
-       FROM Payment p
-       JOIN Booking b ON p.booking_id = b.booking_id
-       LEFT JOIN Event e ON b.event_id = e.event_id
-       WHERE p.payment_id = ?`,
-      [payment_id]
-    );
+    const [rows] = await pool.query('SELECT * FROM Payment WHERE payment_id = ?', [payment_id]);
     return rows[0];
   },
 
   async byBooking(booking_id) {
-    const [rows] = await pool.query('SELECT * FROM Payment WHERE booking_id = ? ORDER BY payment_id ASC', [booking_id]);
+    const [rows] = await pool.query('SELECT * FROM Payment WHERE booking_id = ?', [booking_id]);
     return rows;
   },
 
-  async paidAndDue(booking_id) {
+  async all() {
     const [rows] = await pool.query(
-      `SELECT
-         COALESCE(SUM(CASE WHEN payment_status = 'Confirmed' THEN payment_amount ELSE 0 END), 0) AS paid,
-         COALESCE(SUM(CASE WHEN payment_status = 'Pending' THEN payment_amount ELSE 0 END), 0) AS due,
-         COUNT(*) AS payment_count
-       FROM Payment WHERE booking_id = ?`,
-      [booking_id]
-    );
-    return rows[0];
-  },
-
-  async byUser(user_id) {
-    const [rows] = await pool.query(
-      `SELECT p.*, e.event_name FROM Payment p
+      `SELECT p.*, b.user_id, b.event_id, b.booking_status, b.event_date, b.event_time, b.event_venue
+       FROM Payment p
        JOIN Booking b ON p.booking_id = b.booking_id
-       LEFT JOIN Event e ON b.event_id = e.event_id
-       WHERE b.user_id = ? ORDER BY p.payment_id DESC`,
-      [user_id]
+       ORDER BY p.payment_id DESC`
     );
-    return rows;
-  },
-
-  async all(status) {
-    let query = `SELECT p.*, b.user_id, u.first_name AS user_first_name, u.last_name AS user_last_name, e.event_name
-                 FROM Payment p
-                 JOIN Booking b ON p.booking_id = b.booking_id
-                 JOIN User u ON b.user_id = u.user_id
-                 LEFT JOIN Event e ON b.event_id = e.event_id`;
-    const params = [];
-    if (status) {
-      query += ' WHERE p.payment_status = ?';
-      params.push(status);
-    }
-    query += ' ORDER BY p.payment_id DESC';
-    const [rows] = await pool.query(query, params);
     return rows;
   },
 
   async confirm(payment_id, admin_id) {
-    await pool.query('UPDATE Payment SET payment_status = "Confirmed", admin_id = ? WHERE payment_id = ?', [admin_id, payment_id]);
+    await pool.query('UPDATE Payment SET admin_id = ? WHERE payment_id = ?', [admin_id, payment_id]);
   },
 
-  async countByStatus(status) {
-    const [rows] = await pool.query('SELECT COUNT(*) AS total FROM Payment WHERE payment_status = ?', [status]);
-    return rows[0].total;
+  async paidAndDue(booking_id) {
+    const [rows] = await pool.query(
+      'SELECT COALESCE(SUM(payment_amount), 0) AS paid FROM Payment WHERE booking_id = ?',
+      [booking_id]
+    );
+    return { paid: rows[0].paid, due: 0 };
   },
 
   async totalRevenue(organizer_id) {
-    let query = `SELECT COALESCE(SUM(p.payment_amount),0) AS total FROM Payment p
-                 JOIN Booking b ON p.booking_id = b.booking_id
-                 WHERE p.payment_status = 'Confirmed'`;
+    let query = `
+      SELECT COALESCE(SUM(p.payment_amount), 0) AS total
+      FROM Payment p
+      JOIN Booking b ON p.booking_id = b.booking_id
+      JOIN Event e ON b.event_id = e.event_id
+    `;
     const params = [];
     if (organizer_id) {
-      query += ` AND b.event_id IN (SELECT event_id FROM Event WHERE organizer_id = ?)`;
+      query += ' WHERE e.organizer_id = ?';
       params.push(organizer_id);
     }
     const [rows] = await pool.query(query, params);

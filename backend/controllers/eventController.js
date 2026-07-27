@@ -1,11 +1,11 @@
 const Event = require('../models/Event');
-const { missingFields, isPositiveNumber, isFutureDate } = require('../utils/validation');
+const { missingFields, isPositiveNumber } = require('../utils/validation');
 
-// Public browse — only Approved events by Approved organizers are visible.
+// Public browse — only Approved event templates by Approved organizers.
 exports.browse = async (req, res, next) => {
   try {
-    const { q, type, date, venue, minPrice, maxPrice, sort, page, limit } = req.query;
-    const events = await Event.search({ q, type, date, venue, minPrice, maxPrice, sort, page, limit });
+    const { q, type, minPrice, maxPrice, sort, page, limit } = req.query;
+    const events = await Event.search({ q, type, minPrice, maxPrice, sort, page, limit });
     res.json({ success: true, events });
   } catch (err) {
     next(err);
@@ -17,14 +17,12 @@ exports.getById = async (req, res, next) => {
     const event = await Event.findById(req.params.id);
     if (!event) return res.status(404).json({ success: false, message: 'Event not found' });
 
-    // Block public access to Pending events. Only the owner organizer or admin can view them.
     const isOwner = req.auth && req.auth.role === 'Organizer' && event.organizer_id === req.auth.organizer_id;
     const isAdmin = req.auth && req.auth.role === 'Admin';
-    if (event.status !== 'Approved' && !isOwner && !isAdmin) {
+    if (event.event_status !== 'Approved' && !isOwner && !isAdmin) {
       return res.status(404).json({ success: false, message: 'Event not found' });
     }
 
-    // Record browse (many-to-many User <-> Event) if a logged-in user views it
     if (req.auth && req.auth.role === 'User') {
       await Event.recordBrowse(event.event_id, req.auth.user_id);
     }
@@ -37,23 +35,20 @@ exports.getById = async (req, res, next) => {
 
 exports.create = async (req, res, next) => {
   try {
-    const missing = missingFields(req.body, ['event_name', 'event_type', 'event_date', 'event_time', 'event_venue', 'ticket_price']);
+    const missing = missingFields(req.body, ['event_name', 'event_type', 'ticket_price']);
     if (missing.length) {
       return res.status(400).json({ success: false, message: `Missing fields: ${missing.join(', ')}` });
     }
-    const { event_name, event_type, event_date, event_time, event_venue, ticket_price } = req.body;
+    const { event_name, event_type, ticket_price } = req.body;
 
     if (!isPositiveNumber(ticket_price)) {
       return res.status(400).json({ success: false, message: 'Ticket price must be a positive number' });
     }
-    if (!isFutureDate(event_date)) {
-      return res.status(400).json({ success: false, message: 'Event date cannot be in the past' });
-    }
 
     const event_id = await Event.create({
-      event_name, event_type, event_date, event_time, event_venue, ticket_price,
+      event_name, event_type, ticket_price,
       organizer_id: req.auth.organizer_id,
-      status: 'Pending'
+      event_status: 'Pending'
     });
 
     res.status(201).json({ success: true, message: 'Event submitted and is awaiting admin approval', event_id });
@@ -70,13 +65,13 @@ exports.update = async (req, res, next) => {
       return res.status(403).json({ success: false, message: 'You can only edit your own events' });
     }
 
-    const allowedFields = ['event_name', 'event_type', 'event_date', 'event_time', 'event_venue', 'ticket_price'];
+    const allowedFields = ['event_name', 'event_type', 'ticket_price'];
     const updates = {};
     for (const field of allowedFields) {
       if (req.body[field] !== undefined) updates[field] = req.body[field];
     }
 
-    updates.status = 'Pending';
+    updates.event_status = 'Pending';
 
     await Event.update(req.params.id, updates);
     res.json({ success: true, message: 'Event updated and is awaiting admin re-approval' });

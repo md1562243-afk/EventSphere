@@ -1,38 +1,38 @@
 const Booking = require('../models/Booking');
 const Event = require('../models/Event');
 const Payment = require('../models/Payment');
+const Organizer = require('../models/Organizer');
 const paymentService = require('../services/paymentService');
 const { missingFields, isFutureDate, isPositiveNumber } = require('../utils/validation');
 
-// Book an existing event — one Booking, one Payment for the full ticket price.
+// Book an existing event template — user picks date/time/venue, one Payment for full price.
 exports.bookEvent = async (req, res, next) => {
   try {
-    const missing = missingFields(req.body, ['event_id', 'payment_method']);
+    const missing = missingFields(req.body, ['event_id', 'event_date', 'event_time', 'event_venue', 'payment_method']);
     if (missing.length) {
       return res.status(400).json({ success: false, message: `Missing fields: ${missing.join(', ')}` });
     }
-    const { event_id, payment_method } = req.body;
+    const { event_id, event_date, event_time, event_venue, payment_method } = req.body;
 
     paymentService.assertValidMethod(payment_method);
+
+    if (!isFutureDate(event_date)) {
+      return res.status(400).json({ success: false, message: 'Event date cannot be in the past' });
+    }
 
     const event = await Event.findById(event_id);
     if (!event) {
       return res.status(404).json({ success: false, message: 'Event not found' });
     }
-
-    // Block booking if event has already started
-    const eventDateTime = new Date(`${event.event_date}T${event.event_time}`);
-    if (new Date() > eventDateTime) {
-      return res.status(400).json({ success: false, message: 'Booking closed — this event has already started' });
+    if (event.event_status !== 'Approved') {
+      return res.status(400).json({ success: false, message: 'This event is not available for booking' });
     }
 
     const booking_id = await Booking.create({
       event_id,
-      event_date: event.event_date,
-      event_time: event.event_time,
-      event_venue: event.event_venue,
-      event_name: event.event_name,
-      event_type: event.event_type,
+      event_date,
+      event_time,
+      event_venue,
       user_id: req.auth.user_id
     });
 
@@ -49,15 +49,15 @@ exports.bookEvent = async (req, res, next) => {
   }
 };
 
-// Request a custom event — user provides name, type, date, time, venue, budget.
-// Organizer is assigned automatically (randomly) once payment is confirmed.
+// Request a custom event — creates an Event template + Booking instance + Payment.
+// A random Approved organizer is assigned immediately as the event owner.
 exports.requestCustomEvent = async (req, res, next) => {
   try {
-    const missing = missingFields(req.body, ['event_name', 'event_type', 'event_date', 'event_time', 'venue', 'estimated_budget', 'payment_method']);
+    const missing = missingFields(req.body, ['event_name', 'event_type', 'event_date', 'event_time', 'event_venue', 'estimated_budget', 'payment_method']);
     if (missing.length) {
       return res.status(400).json({ success: false, message: `Missing fields: ${missing.join(', ')}` });
     }
-    const { event_name, event_type, event_date, event_time, venue, payment_method, estimated_budget } = req.body;
+    const { event_name, event_type, event_date, event_time, event_venue, payment_method, estimated_budget } = req.body;
 
     paymentService.assertValidMethod(payment_method);
     if (!isFutureDate(event_date)) {
@@ -68,20 +68,32 @@ exports.requestCustomEvent = async (req, res, next) => {
     }
 
     const budget = Number(estimated_budget);
+    const organizer = await Organizer.randomApproved();
+    if (!organizer) {
+      return res.status(400).json({ success: false, message: 'No approved organizer available at the moment. Please try again later.' });
+    }
 
-    const booking_id = await Booking.create({
-      event_id: null,
-      event_date,
-      event_time,
-      event_venue: venue,
+    // Create the custom Event template
+    const event_id = await Event.create({
       event_name,
       event_type,
+      ticket_price: budget,
+      organizer_id: organizer.organizer_id,
+      event_status: 'Pending'
+    });
+
+    // Create the Booking instance
+    const booking_id = await Booking.create({
+      event_id,
+      event_date,
+      event_time,
+      event_venue,
       user_id: req.auth.user_id
     });
 
     await Payment.create({ payment_method, payment_amount: budget, booking_id });
 
-    res.status(201).json({ success: true, message: 'Custom event request submitted', booking_id });
+    res.status(201).json({ success: true, message: 'Custom event request submitted', booking_id, event_id });
   } catch (err) {
     next(err);
   }
@@ -107,7 +119,7 @@ exports.cancel = async (req, res, next) => {
       return res.status(403).json({ success: false, message: 'You can only cancel your own bookings' });
     }
     if (new Date(booking.event_date) < new Date()) {
-      return res.status(400).json({ success: false, message: 'Cannot cancel a booking after the event has started' });
+      return res.status(400).json({ success: false, message: 'Cannot cancel a booking after the event date has passed' });
     }
 
     await Booking.setStatus(req.params.id, 'Cancelled');

@@ -2,11 +2,11 @@ const pool = require('../config/database');
 
 const Event = {
   async create(data) {
-    const { event_name, event_type, event_date, event_time, event_venue, ticket_price, organizer_id, admin_id = null, status = 'Pending' } = data;
+    const { event_name, event_type, ticket_price, organizer_id, admin_id = null, event_status = 'Pending' } = data;
     const [result] = await pool.query(
-      `INSERT INTO Event (event_name, event_type, event_date, event_time, event_venue, ticket_price, organizer_id, admin_id, status)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [event_name, event_type, event_date, event_time, event_venue, ticket_price, organizer_id, admin_id, status]
+      `INSERT INTO Event (event_name, event_type, ticket_price, organizer_id, admin_id, event_status)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [event_name, event_type, ticket_price, organizer_id, admin_id, event_status]
     );
     return result.insertId;
   },
@@ -21,15 +21,13 @@ const Event = {
     return rows[0];
   },
 
-  // Public browse: only Approved organizer events
-  // All Event table records are organizer-created (custom events live in Booking table with event_id = null)
-  // Pass includeCustom: true for admin/organizer dashboards
-  async search({ q, type, date, venue, minPrice, maxPrice, sort, organizer_id, includeCustom = false, page = 1, limit = 12 }) {
+  // Public browse: only Approved organizer event templates
+  async search({ q, type, minPrice, maxPrice, sort, organizer_id, includeCustom = false, page = 1, limit = 12 }) {
     let query = 'SELECT e.*, o.first_name AS organizer_first_name, o.last_name AS organizer_last_name FROM Event e JOIN Organizer o ON e.organizer_id = o.organizer_id WHERE 1=1';
     const params = [];
 
     if (!includeCustom) {
-      query += ' AND e.status = "Approved" AND o.status = "Approved"';
+      query += ' AND e.event_status = "Approved" AND o.status = "Approved"';
     }
 
     if (organizer_id) {
@@ -44,14 +42,6 @@ const Event = {
       query += ' AND e.event_type = ?';
       params.push(type);
     }
-    if (date) {
-      query += ' AND e.event_date = ?';
-      params.push(date);
-    }
-    if (venue) {
-      query += ' AND e.event_venue LIKE ?';
-      params.push(`%${venue}%`);
-    }
     if (minPrice) {
       query += ' AND e.ticket_price >= ?';
       params.push(minPrice);
@@ -65,8 +55,7 @@ const Event = {
       newest: 'e.event_id DESC',
       oldest: 'e.event_id ASC',
       lowest_price: 'e.ticket_price ASC',
-      highest_price: 'e.ticket_price DESC',
-      upcoming: 'e.event_date ASC'
+      highest_price: 'e.ticket_price DESC'
     };
     query += ` ORDER BY ${sortMap[sort] || sortMap.newest}`;
 
@@ -93,8 +82,8 @@ const Event = {
     await pool.query('UPDATE Event SET admin_id = ? WHERE event_id = ?', [admin_id, event_id]);
   },
 
-  async setStatus(event_id, status, admin_id) {
-    await pool.query('UPDATE Event SET status = ?, admin_id = ? WHERE event_id = ?', [status, admin_id, event_id]);
+  async setStatus(event_id, event_status, admin_id) {
+    await pool.query('UPDATE Event SET event_status = ?, admin_id = ? WHERE event_id = ?', [event_status, admin_id, event_id]);
   },
 
   async delete(event_id) {

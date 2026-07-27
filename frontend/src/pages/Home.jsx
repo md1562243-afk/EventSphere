@@ -5,9 +5,9 @@ import { ArrowRight, Search, CalendarCheck, Sparkles } from 'lucide-react';
 import ShowcaseCard, { showcaseEvents } from '../components/ShowcaseCard';
 
 const steps = [
-  { icon: Search, title: 'Browse', desc: 'Explore approved events by type, date, or venue near you.' },
-  { icon: CalendarCheck, title: 'Book', desc: 'Reserve your seats or request a fully custom event in minutes.' },
-  { icon: Sparkles, title: 'Organize', desc: 'Organizers bring your event to life, verified every step by our team.' }
+  { icon: Search, title: 'Browse', desc: 'Explore approved event packages by type and price.' },
+  { icon: CalendarCheck, title: 'Book', desc: 'Pick your date, time and venue — we handle the rest.' },
+  { icon: Sparkles, title: 'Organize', desc: 'Verified organizers bring your event to life.' }
 ];
 
 export default function Home() {
@@ -25,7 +25,7 @@ export default function Home() {
               Discover <span className="text-primary">•</span> Book <span className="text-secondary">•</span> Organize
             </h1>
             <p className="text-body text-lg mb-8 max-w-md mx-auto">
-              Browse exciting public events or request your own custom event — all in one platform.
+              Browse exciting event packages or request your own custom event — all in one platform.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
               <Link to="/events" className="btn-primary flex items-center gap-2">
