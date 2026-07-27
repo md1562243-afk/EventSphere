@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
+import { formatTime12hr } from '../../utils/formatTime';
 
 const links = [
   { to: '/admin/dashboard', label: 'Overview', end: true },
@@ -59,7 +60,7 @@ export default function AdminEvents() {
                   <td className="py-3 px-4 font-medium text-heading">{e.event_name}</td>
                   <td className="py-3 px-4">{e.event_type}</td>
                   <td className="py-3 px-4">{e.event_date}</td>
-                  <td className="py-3 px-4">{e.event_time}</td>
+                  <td className="py-3 px-4">{formatTime12hr(e.event_time)}</td>
                   <td className="py-3 px-4">{e.event_venue}</td>
                   <td className="py-3 px-4">৳{Number(e.ticket_price).toLocaleString()}</td>
                   <td className="py-3 px-4">#{e.organizer_id}</td>

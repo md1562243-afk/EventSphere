@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
+import { formatTime12hr } from '../../utils/formatTime';
 
 const links = [
   { to: '/admin/dashboard', label: 'Overview', end: true },
@@ -70,7 +71,7 @@ export default function AdminPayments() {
                   <td className="py-3 px-4 text-body">#{p.payment_id}</td>
                   <td className="py-3 px-4 text-body">#{p.booking_id}</td>
                   <td className="py-3 px-4">{p.payment_date}</td>
-                  <td className="py-3 px-4">{p.payment_time}</td>
+                  <td className="py-3 px-4">{formatTime12hr(p.payment_time)}</td>
                   <td className="py-3 px-4">{p.payment_method}</td>
                   <td className="py-3 px-4">৳{Number(p.payment_amount).toLocaleString()}</td>
                   <td className="py-3 px-4">

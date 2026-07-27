@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import DashboardLayout from '../../components/DashboardLayout';
 import StatusBadge from '../../components/StatusBadge';
 import api from '../../api/axios';
+import { formatTime12hr } from '../../utils/formatTime';
 
 const links = [
   { to: '/admin/dashboard', label: 'Overview', end: true },
@@ -48,7 +49,7 @@ export default function AdminBookings() {
                   <td className="py-3 px-4 text-body">#{b.booking_id}</td>
                   <td className="py-3 px-4">#{b.user_id}</td>
                   <td className="py-3 px-4 font-medium text-heading">{b.event_name || 'Unassigned custom event'}</td>
-                  <td className="py-3 px-4">{b.event_date} {b.event_time}</td>
+                  <td className="py-3 px-4">{b.event_date} {formatTime12hr(b.event_time)}</td>
                   <td className="py-3 px-4">{b.event_venue}</td>
                   <td className="py-3 px-4"><StatusBadge status={b.booking_status} /></td>
                   <td className="py-3 px-4">৳{(Number(b.paid) + Number(b.due)).toLocaleString()}</td>

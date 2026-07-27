@@ -4,6 +4,7 @@ import DashboardLayout from '../../components/DashboardLayout';
 import StatCard from '../../components/StatCard';
 import StatusBadge from '../../components/StatusBadge';
 import api from '../../api/axios';
+import { formatTime12hr } from '../../utils/formatTime';
 
 const links = [
   { to: '/organizer/dashboard', label: 'Overview', end: true },
@@ -50,7 +51,7 @@ export default function OrganizerDashboard() {
                       <td className="py-3">#{b.booking_id}</td>
                       <td className="py-3"><StatusBadge status={b.booking_status} /></td>
                       <td className="py-3">{b.event_date}</td>
-                      <td className="py-3">{b.event_time}</td>
+                      <td className="py-3">{formatTime12hr(b.event_time)}</td>
                       <td className="py-3">{b.event_venue}</td>
                       <td className="py-3">#{b.user_id}</td>
                     </tr>
