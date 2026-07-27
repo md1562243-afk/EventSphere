@@ -125,7 +125,6 @@ exports.deleteOrganizer = async (req, res, next) => {
 };
 
 // ---------- Events ----------
-// Admin oversight: sees ALL events (organizer-created AND custom-assigned).
 exports.listEvents = async (req, res, next) => {
   try {
     const events = await Event.search({ includeCustom: true, limit: 200, page: 1 });
@@ -157,52 +156,6 @@ exports.listBookings = async (req, res, next) => {
   }
 };
 
-// Admin only selects the organizer. Event details are derived automatically:
-// venue/date/time come from the booking itself; ticket_price is the sum of
-// this booking's existing Payment rows (paid + due — what the user already
-// committed to); event_name/event_type have no stored source in the schema
-// (Booking has neither column), so they use a clear fixed label.
-// admin_id is set to this admin — also what Event.search() uses to keep
-// these custom events out of the public Browse page.
-exports.assignOrganizer = async (req, res, next) => {
-  try {
-    const { organizer_id } = req.body;
-    if (!organizer_id) {
-      return res.status(400).json({ success: false, message: 'organizer_id is required' });
-    }
-
-    const booking = await Booking.findById(req.params.id);
-    if (!booking) return res.status(404).json({ success: false, message: 'Booking not found' });
-    if (booking.event_id) {
-      return res.status(400).json({ success: false, message: 'This booking is already linked to an event' });
-    }
-
-    const { paid, due } = await Payment.paidAndDue(booking.booking_id);
-    const total_cost = Number(paid) + Number(due);
-
-    const event_id = await Event.create({
-      event_name: `Custom Event #${booking.booking_id}`,
-      event_type: 'Other',
-      event_date: booking.event_date,
-      event_time: booking.event_time,
-      event_venue: booking.event_venue,
-      ticket_price: total_cost > 0 ? total_cost : 0.01,
-      organizer_id,
-      admin_id: req.auth.admin_id
-    });
-
-    await Booking.assignEvent(req.params.id, event_id);
-
-    const organizer = await Organizer.findById(organizer_id);
-    emailService.organizerCustomEventAssigned(organizer.email, 'Custom Event');
-    emailService.userOrganizerAssigned(booking.user_email, 'Custom Event');
-
-    res.json({ success: true, message: 'Organizer assigned to custom event', event_id });
-  } catch (err) {
-    next(err);
-  }
-};
-
 // ---------- Payments ----------
 exports.listPayments = async (req, res, next) => {
   try {
@@ -213,6 +166,11 @@ exports.listPayments = async (req, res, next) => {
   }
 };
 
+// Confirming a payment on a custom-event booking also auto-creates the Event:
+// a random Approved organizer is picked, and event details (name, type, date,
+// time, venue) come straight from what the user submitted on the Booking.
+// If no Approved organizer exists yet, the payment still confirms — the event
+// just stays unassigned and the response flags it so the admin knows to fix it.
 exports.confirmPayment = async (req, res, next) => {
   try {
     const payment = await Payment.findById(req.params.id);
@@ -222,11 +180,40 @@ exports.confirmPayment = async (req, res, next) => {
     await Booking.setStatus(payment.booking_id, 'Confirmed', req.auth.admin_id);
 
     const booking = await Booking.findById(payment.booking_id);
-    if (booking) {
-      emailService.userPaymentConfirmed(booking.user_email, payment.event_name || booking.event_name || 'your event');
+    let warning = null;
+
+    if (booking && !booking.event_id) {
+      const organizer = await Organizer.randomApproved();
+
+      if (organizer) {
+        const { paid, due } = await Payment.paidAndDue(booking.booking_id);
+        const total_cost = Number(paid) + Number(due);
+
+        const event_id = await Event.create({
+          event_name: booking.event_name || `Custom Event #${booking.booking_id}`,
+          event_type: booking.event_type || 'Other',
+          event_date: booking.event_date,
+          event_time: booking.event_time,
+          event_venue: booking.event_venue,
+          ticket_price: total_cost > 0 ? total_cost : 0.01,
+          organizer_id: organizer.organizer_id,
+          admin_id: req.auth.admin_id
+        });
+
+        await Booking.assignEvent(payment.booking_id, event_id);
+
+        emailService.organizerCustomEventAssigned(organizer.email, booking.event_type || 'Custom Event');
+        emailService.userOrganizerAssigned(booking.user_email, booking.event_type || 'Custom Event');
+      } else {
+        warning = 'Payment confirmed, but no Approved organizer exists yet — this event has no organizer assigned.';
+      }
     }
 
-    res.json({ success: true, message: 'Payment confirmed' });
+    if (booking) {
+      emailService.userPaymentConfirmed(booking.user_email, booking.event_name || 'your event');
+    }
+
+    res.json({ success: true, message: 'Payment confirmed', warning });
   } catch (err) {
     next(err);
   }

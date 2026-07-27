@@ -27,7 +27,10 @@ export default function AdminPayments() {
   useEffect(load, [tab]);
 
   const confirm = async (id) => {
-    await api.put(`/admin/payments/${id}/confirm`);
+    const res = await api.put(`/admin/payments/${id}/confirm`);
+    if (res.data.warning) {
+      alert(res.data.warning);
+    }
     load();
   };
 

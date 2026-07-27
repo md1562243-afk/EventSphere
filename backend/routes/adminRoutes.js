@@ -12,7 +12,6 @@ router.use(auth, verifyAdmin);
 
 router.get('/dashboard', adminController.dashboard);
 
-// Only an existing admin can create another admin
 router.post('/admins', adminController.createAdmin);
 
 router.get('/organizers', adminController.listOrganizers);
@@ -27,7 +26,6 @@ router.get('/events', adminController.listEvents);
 router.delete('/events/:id', adminController.deleteEvent);
 
 router.get('/bookings', adminController.listBookings);
-router.put('/bookings/:id/assign-organizer', adminController.assignOrganizer);
 
 router.get('/payments', adminController.listPayments);
 router.put('/payments/:id/confirm', adminController.confirmPayment);

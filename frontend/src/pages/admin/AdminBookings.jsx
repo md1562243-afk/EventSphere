@@ -13,62 +13,20 @@ const links = [
   { to: '/admin/create-admin', label: 'Add Admin' }
 ];
 
-function AssignModal({ booking, organizers, onClose, onAssign }) {
-  const [organizerId, setOrganizerId] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-
-  const submit = async () => {
-    if (!organizerId) return;
-    setSubmitting(true);
-    try {
-      await onAssign(booking.booking_id, { organizer_id: organizerId });
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  return (
-    <div className="fixed inset-0 bg-black/40 grid place-items-center z-50 p-4">
-      <div className="card p-6 w-full max-w-md">
-        <h3 className="font-bold mb-2">Assign Organizer</h3>
-        <p className="text-xs text-body mb-4">
-          Event details (name, venue, date/time, ticket price) are filled in automatically from the user's request.
-        </p>
-        <select className="input-field" value={organizerId} onChange={(e) => setOrganizerId(e.target.value)}>
-          <option value="">Select organizer...</option>
-          {organizers.map((o) => <option key={o.organizer_id} value={o.organizer_id}>#{o.organizer_id} — {o.first_name} {o.last_name}</option>)}
-        </select>
-        <div className="flex gap-3 mt-5">
-          <button onClick={submit} disabled={!organizerId || submitting} className="btn-primary flex-1 disabled:opacity-60">
-            {submitting ? 'Assigning...' : 'Assign'}
-          </button>
-          <button onClick={onClose} className="btn-outline flex-1">Cancel</button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function AdminBookings() {
   const [bookings, setBookings] = useState([]);
-  const [organizers, setOrganizers] = useState([]);
-  const [modalBooking, setModalBooking] = useState(null);
 
   const load = () => {
     api.get('/admin/bookings').then((res) => setBookings(res.data.bookings));
-    api.get('/admin/organizers', { params: { status: 'Approved' } }).then((res) => setOrganizers(res.data.organizers));
   };
 
   useEffect(load, []);
 
-  const handleAssign = async (bookingId, payload) => {
-    await api.put(`/admin/bookings/${bookingId}/assign-organizer`, payload);
-    setModalBooking(null);
-    load();
-  };
-
   return (
     <DashboardLayout title="Monitor Bookings" links={links}>
+      <p className="text-sm text-body mb-5">
+        Organizers are assigned automatically (randomly, from Approved organizers) once payment is confirmed on the Payments page.
+      </p>
       <div className="card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -82,7 +40,6 @@ export default function AdminBookings() {
                 <th className="py-3 px-4">Status</th>
                 <th className="py-3 px-4">Total Cost</th>
                 <th className="py-3 px-4">Paid / Due</th>
-                <th className="py-3 px-4"></th>
               </tr>
             </thead>
             <tbody>
@@ -96,13 +53,6 @@ export default function AdminBookings() {
                   <td className="py-3 px-4"><StatusBadge status={b.booking_status} /></td>
                   <td className="py-3 px-4">৳{(Number(b.paid) + Number(b.due)).toLocaleString()}</td>
                   <td className="py-3 px-4">৳{Number(b.paid).toLocaleString()} / ৳{Number(b.due).toLocaleString()}</td>
-                  <td className="py-3 px-4">
-                    {!b.event_id && (
-                      <button onClick={() => setModalBooking(b)} className="text-primary text-xs font-semibold hover:underline">
-                        Assign Organizer
-                      </button>
-                    )}
-                  </td>
                 </tr>
               ))}
               {bookings.length === 0 && (
@@ -112,10 +62,6 @@ export default function AdminBookings() {
           </table>
         </div>
       </div>
-
-      {modalBooking && (
-        <AssignModal booking={modalBooking} organizers={organizers} onClose={() => setModalBooking(null)} onAssign={handleAssign} />
-      )}
     </DashboardLayout>
   );
 }

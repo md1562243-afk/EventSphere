@@ -14,6 +14,17 @@ const Organizer = {
     return rows[0];
   },
 
+  async randomApproved() {
+    const [rows] = await pool.query(
+      `SELECT organizer_id, first_name, last_name, email
+       FROM Organizer
+       WHERE status = 'Approved'
+       ORDER BY RAND()
+       LIMIT 1`
+    );
+    return rows[0];
+  },
+
   async create({ first_name, last_name, email, hashedPassword }) {
     const [result] = await pool.query(
       'INSERT INTO Organizer (first_name, last_name, email, password, status) VALUES (?, ?, ?, ?, "Pending")',
