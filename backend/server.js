@@ -13,18 +13,16 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Static files (if you serve uploads)
+// Static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Routes
-app.use('/auth/admin', require('./routes/adminAuth'));      // Admin login
-app.use('/auth/organizer', require('./routes/organizerAuth')); // Organizer register/login
-app.use('/auth/user', require('./routes/userAuth'));          // User register/login
-app.use('/admin', require('./routes/admin'));                 // Admin dashboard APIs
-app.use('/events', require('./routes/events'));               // Public event browse
-app.use('/users', require('./routes/users'));                 // User bookings & profile
-app.use('/organizers', require('./routes/organizers'));       // Organizer dashboard APIs
-app.use('/payments', require('./routes/payments'));           // Payment webhooks/stuff
+// Routes — auth endpoints are inside these files
+app.use('/admin', require('./routes/adminRoutes'));
+app.use('/events', require('./routes/eventRoutes'));
+app.use('/users', require('./routes/userRoutes'));
+app.use('/organizers', require('./routes/organizerRoutes'));
+app.use('/bookings', require('./routes/bookingRoutes'));
+app.use('/payments', require('./routes/paymentRoutes'));
 
 // Health check
 app.get('/health', (req, res) => {
@@ -48,5 +46,4 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📡 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
