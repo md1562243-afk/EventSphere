@@ -39,10 +39,6 @@ export default function AdminEvents() {
 
   return (
     <DashboardLayout title="Supervise Events" links={links}>
-      <p className="text-sm text-body mb-5">
-        Organizer-created events require approval before they appear on the public site.
-      </p>
-
       <div className="card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">

@@ -25,9 +25,6 @@ export default function AdminBookings() {
 
   return (
     <DashboardLayout title="Monitor Bookings" links={links}>
-      <p className="text-sm text-body mb-5">
-        Organizers are assigned automatically (randomly, from Approved organizers) once payment is confirmed on the Payments page.
-      </p>
       <div className="card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
