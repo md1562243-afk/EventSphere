@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { CalendarDays, MapPin, Ticket, ArrowRight } from 'lucide-react';
 
-// Static showcase data — edit this however you want
 export const showcaseEvents = [
   { id: 'showcase-1', event_name: 'Grand Wedding', event_type: 'Wedding', event_venue: 'Premium Venues', ticket_price: 50000, event_date: 'On Request', event_time: 'Flexible' },
   { id: 'showcase-2', event_name: 'Live Concert Night', event_type: 'Concert', event_venue: 'Major Halls', ticket_price: 500, event_date: 'On Request', event_time: 'Evening' },
@@ -18,13 +17,10 @@ export default function ShowcaseCard({ event }) {
     <motion.div
       whileHover={{ y: -6 }}
       transition={{ duration: 0.25 }}
-      className="card overflow-hidden group border-2 border-dashed border-slate-200 bg-slate-50/50"
+      className="card overflow-hidden group"
     >
       <div className="p-5">
-        <div className="flex items-center justify-between mb-3">
-          <span className="badge bg-secondary/10 text-secondary text-xs">Showcase</span>
-          <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">Not Bookable</span>
-        </div>
+        <span className="badge bg-primary/10 text-primary mb-3">{event.event_type}</span>
         <h3 className="font-bold text-heading text-base mb-2 line-clamp-1">{event.event_name}</h3>
         <div className="space-y-1.5 text-sm text-body">
           <div className="flex items-center gap-2">

@@ -112,7 +112,7 @@ export default function BrowseEvents() {
         </div>
       )}
 
-      {/* Showcase / What We Offer */}
+      {/* What We Offer */}
       <section className="mt-20 pt-16 border-t border-slate-100">
         <div className="flex items-end justify-between mb-8">
           <div>

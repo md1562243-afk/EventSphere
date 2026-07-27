@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Search, CalendarCheck, Sparkles } from 'lucide-react';
-import api from '../api/axios';
-import EventCard from '../components/EventCard';
 import ShowcaseCard, { showcaseEvents } from '../components/ShowcaseCard';
 
 const steps = [
@@ -13,14 +11,6 @@ const steps = [
 ];
 
 export default function Home() {
-  const [featured, setFeatured] = useState([]);
-
-  useEffect(() => {
-    api.get('/events', { params: { sort: 'newest', limit: 4 } })
-      .then((res) => setFeatured(res.data.events || []))
-      .catch(() => setFeatured([]));
-  }, []);
-
   return (
     <div>
       {/* Hero */}
@@ -49,30 +39,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured Events */}
+      {/* What We Offer */}
       <section className="py-20">
-        <div className="container-app">
-          <div className="flex items-end justify-between mb-8">
-            <div>
-              <h2 className="text-2xl sm:text-3xl mb-1">Featured Events</h2>
-              <p className="text-body text-sm">Hand-picked events happening soon</p>
-            </div>
-            <Link to="/events" className="text-primary text-sm font-semibold flex items-center gap-1">
-              View all <ArrowRight size={14} />
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featured.length > 0 ? (
-              featured.map((e) => <EventCard key={e.event_id} event={e} />)
-            ) : (
-              <p className="text-body col-span-full text-center py-12">No events published yet — check back soon.</p>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* Showcase / What We Offer */}
-      <section className="py-20 bg-white">
         <div className="container-app">
           <div className="flex items-end justify-between mb-8">
             <div>
