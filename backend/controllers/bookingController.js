@@ -20,6 +20,12 @@ exports.bookEvent = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Event not found' });
     }
 
+    // Block booking if event has already started
+    const eventDateTime = new Date(`${event.event_date}T${event.event_time}`);
+    if (new Date() > eventDateTime) {
+      return res.status(400).json({ success: false, message: 'Booking closed — this event has already started' });
+    }
+
     const booking_id = await Booking.create({
       event_id,
       event_date: event.event_date,

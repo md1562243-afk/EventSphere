@@ -24,6 +24,13 @@ export default function EventDetails() {
       .finally(() => setLoading(false));
   }, [id]);
 
+  // Check if event date+time has already passed
+  const isBookingClosed = (() => {
+    if (!event) return false;
+    const eventDateTime = new Date(`${event.event_date}T${event.event_time}`);
+    return new Date() > eventDateTime;
+  })();
+
   const handleBook = async () => {
     if (!isAuthenticated || role !== 'User') {
       navigate('/login/user');
@@ -81,22 +88,35 @@ export default function EventDetails() {
               </button>
             </div>
 
-            <label className="block text-sm font-medium text-heading mb-1">Payment method</label>
-            <select className="input-field mb-4" value={method} onChange={(e) => setMethod(e.target.value)}>
-              {METHODS.map((m) => <option key={m} value={m}>{m}</option>)}
-            </select>
+            {/* Only show payment method if booking is still open */}
+            {!isBookingClosed && (
+              <>
+                <label className="block text-sm font-medium text-heading mb-1">Payment method</label>
+                <select className="input-field mb-4" value={method} onChange={(e) => setMethod(e.target.value)}>
+                  {METHODS.map((m) => <option key={m} value={m}>{m}</option>)}
+                </select>
 
-            <div className="flex items-center justify-between mb-5 text-sm">
-              <span className="text-body">Total</span>
-              <span className="font-bold text-heading">৳{Number(event.ticket_price).toLocaleString()}</span>
-            </div>
+                <div className="flex items-center justify-between mb-5 text-sm">
+                  <span className="text-body">Total</span>
+                  <span className="font-bold text-heading">৳{Number(event.ticket_price).toLocaleString()}</span>
+                </div>
+              </>
+            )}
 
             {message && (
               <p className={`text-sm mb-4 ${message.type === 'error' ? 'text-errorc' : 'text-success'}`}>{message.text}</p>
             )}
 
-            <button onClick={handleBook} disabled={submitting} className="btn-accent w-full text-center disabled:opacity-60">
-              {submitting ? 'Booking...' : 'Book Now'}
+            <button
+              onClick={handleBook}
+              disabled={submitting || isBookingClosed}
+              className={`w-full text-center disabled:opacity-60 disabled:cursor-not-allowed ${
+                isBookingClosed
+                  ? 'bg-slate-300 text-slate-600 font-semibold py-3 rounded-xl'
+                  : 'btn-accent'
+              }`}
+            >
+              {isBookingClosed ? 'Booking Closed' : submitting ? 'Booking...' : 'Book Now'}
             </button>
           </div>
         </div>
