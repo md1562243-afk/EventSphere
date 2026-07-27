@@ -16,13 +16,29 @@ app.use(express.urlencoded({ extended: true }));
 // Static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Routes — auth endpoints are inside these files
-app.use('/admin', require('./routes/adminRoutes'));
-app.use('/events', require('./routes/eventRoutes'));
-app.use('/users', require('./routes/userRoutes'));
-app.use('/organizers', require('./routes/organizerRoutes'));
-app.use('/bookings', require('./routes/bookingRoutes'));
-app.use('/payments', require('./routes/paymentRoutes'));
+// Routes — mount at both / and /api for compatibility
+const adminRoutes = require('./routes/adminRoutes');
+const eventRoutes = require('./routes/eventRoutes');
+const userRoutes = require('./routes/userRoutes');
+const organizerRoutes = require('./routes/organizerRoutes');
+const bookingRoutes = require('./routes/bookingRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
+
+// Without /api prefix
+app.use('/admin', adminRoutes);
+app.use('/events', eventRoutes);
+app.use('/users', userRoutes);
+app.use('/organizers', organizerRoutes);
+app.use('/bookings', bookingRoutes);
+app.use('/payments', paymentRoutes);
+
+// With /api prefix (matches your frontend)
+app.use('/api/admin', adminRoutes);
+app.use('/api/events', eventRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/organizers', organizerRoutes);
+app.use('/api/bookings', bookingRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // Health check
 app.get('/health', (req, res) => {
