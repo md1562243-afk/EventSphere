@@ -16,6 +16,7 @@ router.delete('/:id', adminController.deleteAdmin);
 
 // Admin profile & phones
 router.get('/profile', adminController.getProfile);
+router.put('/profile', adminController.updateProfile);
 router.post('/phones', adminController.addPhone);
 router.delete('/phones/:phone', adminController.removePhone);
 

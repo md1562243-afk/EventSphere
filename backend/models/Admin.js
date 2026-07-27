@@ -31,6 +31,10 @@ const Admin = {
     return result.insertId;
   },
 
+  async updateProfile(admin_id, { first_name, last_name }) {
+    await pool.query('UPDATE Admin SET first_name = ?, last_name = ? WHERE admin_id = ?', [first_name, last_name, admin_id]);
+  },
+
   async addPhone(admin_id, phone_no) {
     await pool.query('INSERT IGNORE INTO Admin_Phone (admin_id, phone_no) VALUES (?, ?)', [admin_id, phone_no]);
   },

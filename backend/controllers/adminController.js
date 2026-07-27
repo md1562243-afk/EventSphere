@@ -95,7 +95,21 @@ exports.getProfile = async (req, res, next) => {
   try {
     const admin = await Admin.findById(req.auth.admin_id);
     const phones = await Admin.getPhones(req.auth.admin_id);
-    res.json({ success: true, admin: { ...admin, phones } });
+    const { password, ...safeAdmin } = admin;
+    res.json({ success: true, admin: { ...safeAdmin, phones } });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.updateProfile = async (req, res, next) => {
+  try {
+    const { first_name, last_name } = req.body;
+    if (!first_name || !last_name) {
+      return res.status(400).json({ success: false, message: 'First name and last name are required' });
+    }
+    await Admin.updateProfile(req.auth.admin_id, { first_name, last_name });
+    res.json({ success: true, message: 'Profile updated' });
   } catch (err) {
     next(err);
   }
@@ -173,7 +187,6 @@ exports.deleteUser = async (req, res, next) => {
   }
 };
 
-// Hard delete organizer + full cascade
 exports.deleteOrganizer = async (req, res, next) => {
   try {
     const organizer = await Organizer.findById(req.params.id);
