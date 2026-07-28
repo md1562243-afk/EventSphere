@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Pencil, Trash2, Plus } from 'lucide-react';
 import DashboardLayout from '../../components/DashboardLayout';
+import StatusBadge from '../../components/StatusBadge';
 import api from '../../api/axios';
 
 const links = [
@@ -45,6 +46,7 @@ export default function OrganizerEvents() {
                 <th className="py-3 px-4">Event</th>
                 <th className="py-3 px-4">Type</th>
                 <th className="py-3 px-4">Price</th>
+                <th className="py-3 px-4">Status</th>
                 <th className="py-3 px-4"></th>
               </tr>
             </thead>
@@ -55,6 +57,7 @@ export default function OrganizerEvents() {
                   <td className="py-3 px-4 font-medium text-heading">{e.event_name}</td>
                   <td className="py-3 px-4">{e.event_type}</td>
                   <td className="py-3 px-4">৳{Number(e.ticket_price).toLocaleString()}</td>
+                  <td className="py-3 px-4"><StatusBadge status={e.event_status} /></td>
                   <td className="py-3 px-4">
                     <div className="flex gap-3">
                       <Link to={`/organizer/events/${e.event_id}/edit`} className="text-primary"><Pencil size={15} /></Link>
@@ -64,7 +67,7 @@ export default function OrganizerEvents() {
                 </tr>
               ))}
               {!loading && events.length === 0 && (
-                <tr><td colSpan={5} className="py-8 text-center text-body">No events yet. Create your first one!</td></tr>
+                <tr><td colSpan={6} className="py-8 text-center text-body">No events yet. Create your first one!</td></tr>
               )}
             </tbody>
           </table>
