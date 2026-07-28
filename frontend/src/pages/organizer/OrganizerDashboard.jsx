@@ -42,7 +42,7 @@ export default function OrganizerDashboard() {
                     <th className="py-2">Event Date</th>
                     <th className="py-2">Event Time</th>
                     <th className="py-2">Venue</th>
-                    <th className="py-2">User ID</th>
+                    <th className="py-2">Event ID</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -53,7 +53,7 @@ export default function OrganizerDashboard() {
                       <td className="py-3">{b.event_date}</td>
                       <td className="py-3">{formatTime12hr(b.event_time)}</td>
                       <td className="py-3">{b.event_venue}</td>
-                      <td className="py-3">#{b.user_id}</td>
+                      <td className="py-3">{b.event_id ? `#${b.event_id}` : '—'}</td>
                     </tr>
                   ))}
                   {data.recent_bookings.length === 0 && (
