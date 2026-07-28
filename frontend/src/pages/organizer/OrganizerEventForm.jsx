@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import DashboardLayout from '../../components/DashboardLayout';
-import TimeInput12hr from '../../components/TimeInput12hr';
 import api from '../../api/axios';
 
 const links = [
@@ -12,7 +11,7 @@ const links = [
   { to: '/organizer/profile', label: 'Profile' }
 ];
 
-const EMPTY = { event_name: '', event_type: '', event_date: '', event_time: '', event_venue: '', ticket_price: '' };
+const EMPTY = { event_name: '', event_type: '', ticket_price: '' };
 
 const EVENT_TYPES = [
   'Conference', 'Workshop', 'Seminar', 'Concert', 'Festival',
@@ -33,8 +32,8 @@ export default function OrganizerEventForm() {
       api.get(`/events/${id}`).then((res) => {
         const e = res.data.event;
         setForm({
-          event_name: e.event_name, event_type: e.event_type,
-          event_date: e.event_date, event_time: e.event_time, event_venue: e.event_venue,
+          event_name: e.event_name,
+          event_type: e.event_type,
           ticket_price: e.ticket_price
         });
       });
@@ -68,35 +67,15 @@ export default function OrganizerEventForm() {
           <label className="block text-sm font-medium text-heading mb-1">Event Name</label>
           <input required className="input-field" value={form.event_name} onChange={update('event_name')} />
         </div>
-        <div className="grid sm:grid-cols-2 gap-5">
-          <div>
-            <label className="block text-sm font-medium text-heading mb-1">Event Type</label>
-            <select required className="input-field" value={form.event_type} onChange={update('event_type')}>
-              <option value="" disabled>Select a category...</option>
-              {EVENT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-heading mb-1">Venue</label>
-            <input required className="input-field" value={form.event_venue} onChange={update('event_venue')} />
-          </div>
-        </div>
-        <div className="grid sm:grid-cols-2 gap-5">
-          <div>
-            <label className="block text-sm font-medium text-heading mb-1">Date</label>
-            <input type="date" required className="input-field" value={form.event_date} onChange={update('event_date')} />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-heading mb-1">Time</label>
-            <TimeInput12hr
-              required
-              value={form.event_time}
-              onChange={(val) => setForm({ ...form, event_time: val })}
-            />
-          </div>
+        <div>
+          <label className="block text-sm font-medium text-heading mb-1">Event Type</label>
+          <select required className="input-field" value={form.event_type} onChange={update('event_type')}>
+            <option value="" disabled>Select a category...</option>
+            {EVENT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+          </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-heading mb-1">Ticket Price (৳)</label>
+          <label className="block text-sm font-medium text-heading mb-1">Starting Price (৳)</label>
           <input type="number" min={1} required className="input-field" value={form.ticket_price} onChange={update('ticket_price')} />
         </div>
 

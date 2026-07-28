@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Search, CalendarCheck, Sparkles } from 'lucide-react';
-import ShowcaseCard, { showcaseEvents } from '../components/ShowcaseCard';
+import ShowcaseCard from '../components/ShowcaseCard';
+import api from '../api/axios';
 
 const steps = [
   { icon: Search, title: 'Browse', desc: 'Explore approved event packages by type and price.' },
@@ -11,6 +12,14 @@ const steps = [
 ];
 
 export default function Home() {
+  const [events, setEvents] = useState([]);
+
+  useEffect(() => {
+    api.get('/events', { params: { limit: 4, sort: 'newest' } })
+      .then((res) => setEvents(res.data.events || []))
+      .catch(() => setEvents([]));
+  }, []);
+
   return (
     <div>
       {/* Hero */}
@@ -51,11 +60,15 @@ export default function Home() {
               Request custom <ArrowRight size={14} />
             </Link>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {showcaseEvents.map((e) => (
-              <ShowcaseCard key={e.id} event={e} />
-            ))}
-          </div>
+          {events.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {events.map((e) => (
+                <ShowcaseCard key={e.event_id} event={e} />
+              ))}
+            </div>
+          ) : (
+            <p className="text-body text-sm">No event packages available yet — check back soon.</p>
+          )}
         </div>
       </section>
 

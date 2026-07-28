@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Search, SlidersHorizontal, ArrowRight } from 'lucide-react';
 import api from '../api/axios';
 import EventCard from '../components/EventCard';
-import ShowcaseCard, { showcaseEvents } from '../components/ShowcaseCard';
+import ShowcaseCard from '../components/ShowcaseCard';
 import { Link } from 'react-router-dom';
 
 const SORT_OPTIONS = [
@@ -120,11 +120,15 @@ export default function BrowseEvents() {
             Request custom <ArrowRight size={14} />
           </Link>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {showcaseEvents.map((e) => (
-            <ShowcaseCard key={e.id} event={e} />
-          ))}
-        </div>
+        {events.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {events.slice(0, 4).map((e) => (
+              <ShowcaseCard key={`showcase-${e.event_id}`} event={e} />
+            ))}
+          </div>
+        ) : (
+          <p className="text-body text-sm">No event packages available yet — check back soon.</p>
+        )}
       </section>
     </div>
   );
