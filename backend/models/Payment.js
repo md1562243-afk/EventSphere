@@ -22,9 +22,10 @@ const Payment = {
 
   async byUser(user_id) {
     const [rows] = await pool.query(
-      `SELECT p.*, b.event_name, b.event_type, b.event_date, b.event_venue, b.event_time
+      `SELECT p.*, e.event_name, e.event_type, b.event_date, b.event_venue, b.event_time
        FROM Payment p
        JOIN Booking b ON p.booking_id = b.booking_id
+       LEFT JOIN Event e ON b.event_id = e.event_id
        WHERE b.user_id = ?
        ORDER BY p.payment_id DESC`,
       [user_id]

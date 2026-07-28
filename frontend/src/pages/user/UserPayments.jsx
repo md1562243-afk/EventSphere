@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import DashboardLayout from '../../components/DashboardLayout';
-import StatusBadge from '../../components/StatusBadge';
 import api from '../../api/axios';
 import { formatTime12hr } from '../../utils/formatTime';
 
@@ -26,22 +25,28 @@ export default function UserPayments() {
             <thead className="bg-slate-50">
               <tr className="text-left text-body">
                 <th className="py-3 px-4">Event</th>
+                <th className="py-3 px-4">Event Date</th>
+                <th className="py-3 px-4">Event Time</th>
                 <th className="py-3 px-4">Method</th>
                 <th className="py-3 px-4">Amount</th>
                 <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4">Date</th>
-                <th className="py-3 px-4">Time</th>
               </tr>
             </thead>
             <tbody>
               {payments.map((p) => (
                 <tr key={p.payment_id} className="border-t border-slate-50">
                   <td className="py-3 px-4">{p.event_name || 'Custom Event'}</td>
+                  <td className="py-3 px-4">{p.event_date}</td>
+                  <td className="py-3 px-4">{formatTime12hr(p.event_time)}</td>
                   <td className="py-3 px-4">{p.payment_method}</td>
                   <td className="py-3 px-4">৳{Number(p.payment_amount).toLocaleString()}</td>
-                  <td className="py-3 px-4"><StatusBadge status={p.payment_status} /></td>
-                  <td className="py-3 px-4">{p.payment_date}</td>
-                  <td className="py-3 px-4">{formatTime12hr(p.payment_time)}</td>
+                  <td className="py-3 px-4">
+                    {p.admin_id ? (
+                      <span className="text-success text-xs font-semibold">Confirmed</span>
+                    ) : (
+                      <span className="text-pendingc text-xs font-semibold">Pending</span>
+                    )}
+                  </td>
                 </tr>
               ))}
               {payments.length === 0 && (
