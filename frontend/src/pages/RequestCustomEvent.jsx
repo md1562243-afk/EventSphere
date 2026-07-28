@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useForm, useWatch, Controller } from 'react-hook-form';
+import { CalendarDays, MapPin, Ticket } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 import TimeInput12hr from '../components/TimeInput12hr';
@@ -15,11 +16,17 @@ const EVENT_TYPES = [
 export default function RequestCustomEvent() {
   const { isAuthenticated, role } = useAuth();
   const navigate = useNavigate();
-  const { register, handleSubmit, control, formState: { errors } } = useForm();
+  const [searchParams] = useSearchParams();
+  const preselectedType = searchParams.get('type') || '';
+  const sourceEventId = searchParams.get('event_id') || '';
+
+  const { register, handleSubmit, control, formState: { errors } } = useForm({
+    defaultValues: { event_type: preselectedType }
+  });
   const [message, setMessage] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
-  const budget = useWatch({ control, name: 'estimated_budget' });
+  const price = useWatch({ control, name: 'ticket_price' });
 
   const onSubmit = async (data) => {
     if (!isAuthenticated || role !== 'User') {
@@ -29,8 +36,10 @@ export default function RequestCustomEvent() {
     setSubmitting(true);
     setMessage(null);
     try {
-      await api.post('/users/bookings/custom', data);
-      setMessage({ type: 'success', text: 'Your custom event request has been submitted! Our admin team will verify payment and assign an organizer.' });
+      const payload = { ...data };
+      if (sourceEventId) payload.source_event_id = Number(sourceEventId);
+      await api.post('/users/bookings/custom', payload);
+      setMessage({ type: 'success', text: 'Your custom event request has been submitted! Our admin team will verify your payment shortly.' });
     } catch (err) {
       setMessage({ type: 'error', text: err.response?.data?.message || 'Submission failed' });
     } finally {
@@ -41,7 +50,11 @@ export default function RequestCustomEvent() {
   return (
     <div className="container-app py-12 max-w-2xl">
       <h1 className="text-3xl mb-2">Request a Custom Event</h1>
-      <p className="text-body mb-8">Tell us what you're planning and we'll take care of the rest.</p>
+      <p className="text-body mb-8">
+        {preselectedType
+          ? `You're requesting a ${preselectedType} event — give it your own name, date, time and venue.`
+          : "Tell us what you're planning and we'll take care of the rest."}
+      </p>
 
       {!isAuthenticated && (
         <div className="card p-4 mb-6 bg-primary/5 text-sm text-heading">
@@ -58,7 +71,10 @@ export default function RequestCustomEvent() {
 
         <div>
           <label className="block text-sm font-medium text-heading mb-1">Event Type</label>
-          <select className="input-field" {...register('event_type', { required: true })}>
+          <select
+            className={`input-field ${preselectedType ? 'pointer-events-none bg-slate-50' : ''}`}
+            {...register('event_type', { required: true })}
+          >
             <option value="" disabled>Select a category...</option>
             {EVENT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
           </select>
@@ -68,7 +84,10 @@ export default function RequestCustomEvent() {
         <div className="grid sm:grid-cols-2 gap-5">
           <div>
             <label className="block text-sm font-medium text-heading mb-1">Preferred Date</label>
-            <input type="date" className="input-field" {...register('event_date', { required: true })} />
+            <div className="relative">
+              <CalendarDays size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+              <input type="date" className="input-field !pl-10" {...register('event_date', { required: true })} />
+            </div>
           </div>
           <div>
             <label className="block text-sm font-medium text-heading mb-1">Preferred Time</label>
@@ -86,13 +105,19 @@ export default function RequestCustomEvent() {
 
         <div>
           <label className="block text-sm font-medium text-heading mb-1">Venue</label>
-          <input className="input-field" placeholder="Preferred venue or area" {...register('event_venue', { required: true })} />
+          <div className="relative">
+            <MapPin size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+            <input className="input-field !pl-10" placeholder="Preferred venue or area" {...register('event_venue', { required: true })} />
+          </div>
           {errors.event_venue && <p className="text-errorc text-xs mt-1">Venue is required</p>}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-heading mb-1">Estimated Budget (৳)</label>
-          <input type="number" min={1} required className="input-field" {...register('estimated_budget', { required: true, min: 1 })} />
+          <label className="block text-sm font-medium text-heading mb-1">Price (৳)</label>
+          <div className="relative">
+            <Ticket size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+            <input type="number" min={1} className="input-field !pl-10" {...register('ticket_price', { required: true, min: 1 })} />
+          </div>
         </div>
 
         <div>
@@ -102,9 +127,9 @@ export default function RequestCustomEvent() {
           </select>
         </div>
 
-        {budget > 0 && (
+        {price > 0 && (
           <p className="text-sm text-body">
-            You'll pay the full ৳{Number(budget).toLocaleString()} now.
+            You'll pay the full ৳{Number(price).toLocaleString()} now.
           </p>
         )}
 

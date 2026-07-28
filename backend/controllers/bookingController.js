@@ -49,40 +49,54 @@ exports.bookEvent = async (req, res, next) => {
   }
 };
 
-// Request a custom event — creates an Event template + Booking instance + Payment.
-// A random Approved organizer is assigned immediately as the event owner.
+// Request a custom event — creates a private Event + Booking + Payment.
+// If the request came from a "What We Offer" card (source_event_id present), the
+// organizer who owns that public template is assigned directly. Otherwise a
+// random Approved organizer is assigned. This new Event always stays
+// event_status = 'Pending' — it is never approved, so it never appears in the
+// public showcase or Browse grid. admin_id gets attached to it only as a record
+// once payment is confirmed (see adminController.confirmPayment).
 exports.requestCustomEvent = async (req, res, next) => {
   try {
-    const missing = missingFields(req.body, ['event_name', 'event_type', 'event_date', 'event_time', 'event_venue', 'estimated_budget', 'payment_method']);
+    const missing = missingFields(req.body, ['event_name', 'event_type', 'event_date', 'event_time', 'event_venue', 'ticket_price', 'payment_method']);
     if (missing.length) {
       return res.status(400).json({ success: false, message: `Missing fields: ${missing.join(', ')}` });
     }
-    const { event_name, event_type, event_date, event_time, event_venue, payment_method, estimated_budget } = req.body;
+    const { event_name, event_type, event_date, event_time, event_venue, payment_method, ticket_price, source_event_id } = req.body;
 
     paymentService.assertValidMethod(payment_method);
     if (!isFutureDate(event_date)) {
       return res.status(400).json({ success: false, message: 'Event date cannot be in the past' });
     }
-    if (!isPositiveNumber(estimated_budget)) {
-      return res.status(400).json({ success: false, message: 'Estimated budget must be a positive number' });
+    if (!isPositiveNumber(ticket_price)) {
+      return res.status(400).json({ success: false, message: 'Price must be a positive number' });
     }
 
-    const budget = Number(estimated_budget);
-    const organizer = await Organizer.randomApproved();
-    if (!organizer) {
-      return res.status(400).json({ success: false, message: 'No approved organizer available at the moment. Please try again later.' });
+    const price = Number(ticket_price);
+
+    let organizer_id;
+    if (source_event_id) {
+      const sourceEvent = await Event.findById(source_event_id);
+      if (!sourceEvent) {
+        return res.status(404).json({ success: false, message: 'Selected event type not found' });
+      }
+      organizer_id = sourceEvent.organizer_id;
+    } else {
+      const organizer = await Organizer.randomApproved();
+      if (!organizer) {
+        return res.status(400).json({ success: false, message: 'No approved organizer available at the moment. Please try again later.' });
+      }
+      organizer_id = organizer.organizer_id;
     }
 
-    // Create the custom Event template
     const event_id = await Event.create({
       event_name,
       event_type,
-      ticket_price: budget,
-      organizer_id: organizer.organizer_id,
+      ticket_price: price,
+      organizer_id,
       event_status: 'Pending'
     });
 
-    // Create the Booking instance
     const booking_id = await Booking.create({
       event_id,
       event_date,
@@ -91,7 +105,7 @@ exports.requestCustomEvent = async (req, res, next) => {
       user_id: req.auth.user_id
     });
 
-    await Payment.create({ payment_method, payment_amount: budget, booking_id });
+    await Payment.create({ payment_method, payment_amount: price, booking_id });
 
     res.status(201).json({ success: true, message: 'Custom event request submitted', booking_id, event_id });
   } catch (err) {

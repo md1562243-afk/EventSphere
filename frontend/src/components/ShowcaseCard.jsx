@@ -19,7 +19,10 @@ export default function ShowcaseCard({ event }) {
           </div>
         </div>
         <Link
-          to={`/events/${event.event_id}`}
+          to={{
+            pathname: '/request-event',
+            search: `?type=${encodeURIComponent(event.event_type)}&event_id=${event.event_id}`
+          }}
           className="btn-outline w-full text-center text-xs flex items-center justify-center gap-1 py-2"
         >
           Request This Type <ArrowRight size={12} />

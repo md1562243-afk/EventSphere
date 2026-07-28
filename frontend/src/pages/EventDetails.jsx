@@ -77,7 +77,7 @@ export default function EventDetails() {
 
           <div className="card p-6 mb-6">
             <h3 className="font-bold mb-2">Organizer</h3>
-            <p className="text-body text-sm">{event.organizer_first_name} {event.organizer_last_name} (ID #{event.organizer_id})</p>
+            <p className="text-body text-sm">{event.organizer_first_name} {event.organizer_last_name}</p>
           </div>
 
           <div className="card p-6">
@@ -104,10 +104,10 @@ export default function EventDetails() {
               <div>
                 <label className="block text-xs font-medium text-body mb-1">Event Date</label>
                 <div className="relative">
-                  <CalendarDays size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <CalendarDays size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                   <input
                     type="date"
-                    className="input-field pl-9"
+                    className="input-field !pl-10"
                     value={eventDate}
                     onChange={(e) => setEventDate(e.target.value)}
                   />
@@ -116,10 +116,10 @@ export default function EventDetails() {
               <div>
                 <label className="block text-xs font-medium text-body mb-1">Event Time</label>
                 <div className="relative">
-                  <Clock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <Clock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                   <input
                     type="time"
-                    className="input-field pl-9"
+                    className="input-field !pl-10"
                     value={eventTime}
                     onChange={(e) => setEventTime(e.target.value)}
                   />
@@ -128,10 +128,10 @@ export default function EventDetails() {
               <div>
                 <label className="block text-xs font-medium text-body mb-1">Venue</label>
                 <div className="relative">
-                  <MapPin size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <MapPin size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                   <input
                     type="text"
-                    className="input-field pl-9"
+                    className="input-field !pl-10"
                     placeholder="Enter venue address"
                     value={eventVenue}
                     onChange={(e) => setEventVenue(e.target.value)}
