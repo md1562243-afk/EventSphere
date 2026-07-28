@@ -75,11 +75,6 @@ export default function EventDetails() {
           <span className="badge bg-primary/10 text-primary mb-3">{event.event_type}</span>
           <h1 className="text-3xl mb-4">{event.event_name}</h1>
 
-          <div className="card p-6 mb-6">
-            <h3 className="font-bold mb-2">Organizer</h3>
-            <p className="text-body text-sm">{event.organizer_first_name} {event.organizer_last_name}</p>
-          </div>
-
           <div className="card p-6">
             <h3 className="font-bold mb-3">About this event type</h3>
             <p className="text-body text-sm leading-relaxed">
