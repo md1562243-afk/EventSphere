@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Search, CalendarCheck, Sparkles } from 'lucide-react';
-import ShowcaseCard from '../components/ShowcaseCard';
+import EventCard from '../components/EventCard';
 import api from '../api/axios';
 
 const steps = [
@@ -15,7 +15,7 @@ export default function Home() {
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
-    api.get('/events', { params: { limit: 4, sort: 'newest' } })
+    api.get('/events', { params: { limit: 8, sort: 'newest' } })
       .then((res) => setEvents(res.data.events || []))
       .catch(() => setEvents([]));
   }, []);
@@ -38,7 +38,7 @@ export default function Home() {
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
               <Link to="/events" className="btn-primary flex items-center gap-2">
-                Explore Events <ArrowRight size={16} />
+                Browse Events <ArrowRight size={16} />
               </Link>
               <Link to="/request-event" className="btn-accent">
                 Request Custom Event
@@ -54,16 +54,16 @@ export default function Home() {
           <div className="flex items-end justify-between mb-8">
             <div>
               <h2 className="text-2xl sm:text-3xl mb-1">What We Offer</h2>
-              <p className="text-body text-sm">Popular event types you can request — starting prices shown</p>
+              <p className="text-body text-sm">Popular event packages you can request — starting prices shown</p>
             </div>
-            <Link to="/request-event" className="text-primary text-sm font-semibold flex items-center gap-1">
-              Request custom <ArrowRight size={14} />
+            <Link to="/events" className="text-primary text-sm font-semibold flex items-center gap-1">
+              Browse all <ArrowRight size={14} />
             </Link>
           </div>
           {events.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {events.map((e) => (
-                <ShowcaseCard key={e.event_id} event={e} />
+                <EventCard key={e.event_id} event={e} />
               ))}
             </div>
           ) : (

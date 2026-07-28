@@ -66,6 +66,21 @@ const Event = {
     return rows;
   },
 
+  // For admin review: includes a booking_count so the UI can tell apart
+  // organizer templates (0 bookings when Pending, awaiting first approval)
+  // from custom-request events (always exactly 1 booking, created alongside
+  // them) — used to hide the Approve action on custom-request rows.
+  async adminList() {
+    const [rows] = await pool.query(
+      `SELECT e.*, o.first_name AS organizer_first_name, o.last_name AS organizer_last_name,
+              (SELECT COUNT(*) FROM Booking b WHERE b.event_id = e.event_id) AS booking_count
+       FROM Event e
+       JOIN Organizer o ON e.organizer_id = o.organizer_id
+       ORDER BY e.event_id DESC`
+    );
+    return rows;
+  },
+
   async update(event_id, data) {
     const fields = [];
     const params = [];

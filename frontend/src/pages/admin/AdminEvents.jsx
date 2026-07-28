@@ -39,6 +39,9 @@ export default function AdminEvents() {
 
   return (
     <DashboardLayout title="Supervise Events" links={links}>
+      <p className="text-sm text-body mb-5">
+        Only events with zero bookings are organizer templates awaiting approval — those already tied to a booking are private custom requests and are hidden from Browse regardless of status.
+      </p>
       <div className="card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -48,30 +51,38 @@ export default function AdminEvents() {
                 <th className="py-3 px-4">Event Name</th>
                 <th className="py-3 px-4">Type</th>
                 <th className="py-3 px-4">Price</th>
-                <th className="py-3 px-4">Organizer ID</th>
+                <th className="py-3 px-4">Organizer</th>
                 <th className="py-3 px-4">Status</th>
                 <th className="py-3 px-4"></th>
               </tr>
             </thead>
             <tbody>
-              {events.map((e) => (
-                <tr key={e.event_id} className="border-t border-slate-50">
-                  <td className="py-3 px-4 text-body">#{e.event_id}</td>
-                  <td className="py-3 px-4 font-medium text-heading">{e.event_name}</td>
-                  <td className="py-3 px-4">{e.event_type}</td>
-                  <td className="py-3 px-4">৳{Number(e.ticket_price).toLocaleString()}</td>
-                  <td className="py-3 px-4">#{e.organizer_id}</td>
-                  <td className="py-3 px-4"><StatusBadge status={e.event_status} /></td>
-                  <td className="py-3 px-4">
-                    <div className="flex gap-3 text-xs font-semibold">
-                      {e.event_status === 'Pending' && (
-                        <button onClick={() => approve(e.event_id)} className="text-success hover:underline">Approve</button>
+              {events.map((e) => {
+                const isTemplate = Number(e.booking_count) === 0;
+                return (
+                  <tr key={e.event_id} className="border-t border-slate-50">
+                    <td className="py-3 px-4 text-body">#{e.event_id}</td>
+                    <td className="py-3 px-4 font-medium text-heading">{e.event_name}</td>
+                    <td className="py-3 px-4">{e.event_type}</td>
+                    <td className="py-3 px-4">৳{Number(e.ticket_price).toLocaleString()}</td>
+                    <td className="py-3 px-4">{e.organizer_first_name} {e.organizer_last_name}</td>
+                    <td className="py-3 px-4">
+                      <StatusBadge status={e.event_status} />
+                      {!isTemplate && (
+                        <p className="text-[11px] text-body mt-0.5">Custom request</p>
                       )}
-                      <button onClick={() => remove(e.event_id)} className="text-errorc hover:underline">Delete</button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="flex gap-3 text-xs font-semibold">
+                        {e.event_status === 'Pending' && isTemplate && (
+                          <button onClick={() => approve(e.event_id)} className="text-success hover:underline">Approve</button>
+                        )}
+                        <button onClick={() => remove(e.event_id)} className="text-errorc hover:underline">Delete</button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
               {!loading && events.length === 0 && (
                 <tr><td colSpan={7} className="py-8 text-center text-body">No events yet.</td></tr>
               )}

@@ -202,7 +202,7 @@ exports.deleteOrganizer = async (req, res, next) => {
 // ---------- Events ----------
 exports.listEvents = async (req, res, next) => {
   try {
-    const events = await Event.search({ includeCustom: true, limit: 200, page: 1 });
+    const events = await Event.adminList();
     res.json({ success: true, events });
   } catch (err) {
     next(err);
