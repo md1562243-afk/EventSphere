@@ -9,7 +9,7 @@ export default function HostedEventCard({ event }) {
         <div className="flex items-start justify-between mb-3">
           <span className="badge bg-secondary/10 text-secondary">{event.event_type}</span>
           <span className="text-[10px] font-bold uppercase tracking-wide text-body bg-slate-100 rounded-full px-2 py-1">
-            Hosted
+            Custom
           </span>
         </div>
         <h3 className="font-bold text-heading text-base mb-3 line-clamp-1">{event.event_name}</h3>
@@ -30,7 +30,7 @@ export default function HostedEventCard({ event }) {
             </div>
           )}
         </div>
-        <p className="text-xs text-body italic">Already booked — not open for new bookings</p>
+        <p className="text-xs text-body italic">A custom event requested by a user — not open for booking</p>
       </div>
     </div>
   );

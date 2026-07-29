@@ -122,15 +122,15 @@ export default function BrowseEvents() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-heading mb-5">Events Hosted</h2>
-            {hostedEvents.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {hostedEvents.map((e) => <HostedEventCard key={e.event_id} event={e} />)}
-              </div>
-            ) : (
-              <p className="text-body text-sm">No hosted events match your search.</p>
-            )}
-          </section>
+  <h2 className="text-xl font-bold text-heading mb-5">Custom Requests</h2>
+  {hostedEvents.length > 0 ? (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {hostedEvents.map((e) => <HostedEventCard key={e.event_id} event={e} />)}
+    </div>
+  ) : (
+    <p className="text-body text-sm">No custom requests match your search.</p>
+  )}
+</section>
         </>
       )}
     </div>
