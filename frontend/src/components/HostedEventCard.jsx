@@ -1,5 +1,5 @@
 import React from 'react';
-import { CalendarDays, MapPin, Clock } from 'lucide-react';
+import { CalendarDays, MapPin, Clock, Ticket } from 'lucide-react';
 import { formatTime12hr } from '../utils/formatTime';
 
 export default function HostedEventCard({ event }) {
@@ -13,7 +13,7 @@ export default function HostedEventCard({ event }) {
           </span>
         </div>
         <h3 className="font-bold text-heading text-base mb-3 line-clamp-1">{event.event_name}</h3>
-        <div className="space-y-1.5 text-sm text-body">
+        <div className="space-y-1.5 text-sm text-body mb-4">
           {event.hosted_date && (
             <div className="flex items-center gap-2">
               <CalendarDays size={14} /> {event.hosted_date}
@@ -29,6 +29,9 @@ export default function HostedEventCard({ event }) {
               <MapPin size={14} /> <span className="line-clamp-1">{event.hosted_venue}</span>
             </div>
           )}
+        </div>
+        <div className="flex items-center gap-1 font-bold text-heading pt-3 border-t border-slate-100">
+          <Ticket size={14} className="text-accent" /> ৳{Number(event.ticket_price).toLocaleString()}
         </div>
       </div>
     </div>
