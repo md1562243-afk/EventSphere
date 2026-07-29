@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Ticket, Share2, ArrowLeft, CalendarDays, MapPin, Clock } from 'lucide-react';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
+import TimeInput12hr from '../components/TimeInput12hr';
 
 const METHODS = ['bKash', 'Nagad', 'Credit Card', 'Debit Card', 'Cash'];
 
@@ -13,6 +14,7 @@ export default function EventDetails() {
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [method, setMethod] = useState('bKash');
+  const [eventName, setEventName] = useState('');
   const [eventDate, setEventDate] = useState('');
   const [eventTime, setEventTime] = useState('');
   const [eventVenue, setEventVenue] = useState('');
@@ -31,8 +33,8 @@ export default function EventDetails() {
       navigate('/login/user');
       return;
     }
-    if (!eventDate || !eventTime || !eventVenue) {
-      setMessage({ type: 'error', text: 'Please fill in event date, time and venue' });
+    if (!eventName.trim() || !eventDate || !eventTime || !eventVenue) {
+      setMessage({ type: 'error', text: 'Please fill in event name, date, time and venue' });
       return;
     }
     const selectedDate = new Date(eventDate);
@@ -46,16 +48,18 @@ export default function EventDetails() {
     setSubmitting(true);
     setMessage(null);
     try {
-      const res = await api.post('/users/bookings', {
-        event_id: Number(id),
+      const res = await api.post('/users/bookings/custom', {
+        source_event_id: Number(id),
+        event_name: eventName,
+        event_type: event.event_type,
         event_date: eventDate,
         event_time: eventTime,
         event_venue: eventVenue,
         payment_method: method
       });
-      setMessage({ type: 'success', text: `Booking created! Total ৳${res.data.total_amount}. Payment is pending admin verification.` });
+      setMessage({ type: 'success', text: 'Request submitted! Payment is pending admin verification.' });
     } catch (err) {
-      setMessage({ type: 'error', text: err.response?.data?.message || 'Booking failed' });
+      setMessage({ type: 'error', text: err.response?.data?.message || 'Request failed' });
     } finally {
       setSubmitting(false);
     }
@@ -79,7 +83,7 @@ export default function EventDetails() {
             <h3 className="font-bold mb-3">About this event type</h3>
             <p className="text-body text-sm leading-relaxed">
               This is a {event.event_type.toLowerCase()} event package starting at ৳{Number(event.ticket_price).toLocaleString()}.
-              Select your preferred date, time and venue to book this package for your own occasion.
+              Give it your own name and pick your preferred date, time and venue to request it for your own occasion.
             </p>
           </div>
         </div>
@@ -97,6 +101,16 @@ export default function EventDetails() {
 
             <div className="space-y-3 mb-4">
               <div>
+                <label className="block text-xs font-medium text-body mb-1">Event Name</label>
+                <input
+                  type="text"
+                  className="input-field"
+                  placeholder="e.g. Sarah & Tom's Wedding"
+                  value={eventName}
+                  onChange={(e) => setEventName(e.target.value)}
+                />
+              </div>
+              <div>
                 <label className="block text-xs font-medium text-body mb-1">Event Date</label>
                 <div className="relative">
                   <CalendarDays size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
@@ -110,15 +124,7 @@ export default function EventDetails() {
               </div>
               <div>
                 <label className="block text-xs font-medium text-body mb-1">Event Time</label>
-                <div className="relative">
-                  <Clock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-                  <input
-                    type="time"
-                    className="input-field !pl-10"
-                    value={eventTime}
-                    onChange={(e) => setEventTime(e.target.value)}
-                  />
-                </div>
+                <TimeInput12hr value={eventTime} onChange={setEventTime} />
               </div>
               <div>
                 <label className="block text-xs font-medium text-body mb-1">Venue</label>
@@ -150,7 +156,7 @@ export default function EventDetails() {
             )}
 
             <button onClick={handleBook} disabled={submitting} className="btn-accent w-full text-center disabled:opacity-60">
-              {submitting ? 'Booking...' : 'Book Now'}
+              {submitting ? 'Submitting...' : 'Request This Event'}
             </button>
           </div>
         </div>
