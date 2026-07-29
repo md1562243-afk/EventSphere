@@ -40,7 +40,7 @@ export default function AdminEvents() {
   return (
     <DashboardLayout title="Supervise Events" links={links}>
       <p className="text-sm text-body mb-5">
-        Approving an event makes it visible on Browse — as "What We Offer" if it's a reusable template, or "Events Hosted" if it's tied to one specific booking.
+        Approving an event makes it visible on Browse — as "What We Offer" if it's a reusable template, or "Custom Requests" if it's tied to one specific booking.
       </p>
       <div className="card overflow-hidden">
         <div className="overflow-x-auto">
@@ -51,8 +51,7 @@ export default function AdminEvents() {
                 <th className="py-3 px-4">Event Name</th>
                 <th className="py-3 px-4">Type</th>
                 <th className="py-3 px-4">Price</th>
-                <th className="py-3 px-4">Organizer</th>
-                <th className="py-3 px-4">Bookings</th>
+                <th className="py-3 px-4">Organizer ID</th>
                 <th className="py-3 px-4">Status</th>
                 <th className="py-3 px-4"></th>
               </tr>
@@ -64,8 +63,7 @@ export default function AdminEvents() {
                   <td className="py-3 px-4 font-medium text-heading">{e.event_name}</td>
                   <td className="py-3 px-4">{e.event_type}</td>
                   <td className="py-3 px-4">৳{Number(e.ticket_price).toLocaleString()}</td>
-                  <td className="py-3 px-4">{e.organizer_first_name} {e.organizer_last_name}</td>
-                  <td className="py-3 px-4">{e.booking_count}</td>
+                  <td className="py-3 px-4">#{e.organizer_id}</td>
                   <td className="py-3 px-4"><StatusBadge status={e.event_status} /></td>
                   <td className="py-3 px-4">
                     <div className="flex gap-3 text-xs font-semibold">
@@ -78,7 +76,7 @@ export default function AdminEvents() {
                 </tr>
               ))}
               {!loading && events.length === 0 && (
-                <tr><td colSpan={8} className="py-8 text-center text-body">No events yet.</td></tr>
+                <tr><td colSpan={7} className="py-8 text-center text-body">No events yet.</td></tr>
               )}
             </tbody>
           </table>
