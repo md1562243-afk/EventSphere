@@ -103,12 +103,11 @@ export default function EventDetails() {
               <div>
                 <label className="block text-xs font-medium text-body mb-1">Event Name</label>
                 <input
-                  type="text"
-                  className="input-field"
-                  placeholder="e.g. Sarah & Tom's Wedding"
-                  value={eventName}
-                  onChange={(e) => setEventName(e.target.value)}
-                />
+  type="text"
+  className="input-field"
+  value={eventName}
+  onChange={(e) => setEventName(e.target.value)}
+/>
               </div>
               <div>
                 <label className="block text-xs font-medium text-body mb-1">Event Date</label>
