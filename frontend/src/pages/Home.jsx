@@ -15,8 +15,13 @@ export default function Home() {
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
-    api.get('/events', { params: { limit: 8, sort: 'newest' } })
-      .then((res) => setEvents(res.data.events || []))
+    api.get('/events', { params: { limit: 12, sort: 'newest' } })
+      .then((res) => {
+        const all = res.data.events || [];
+        // Only show bookable organizer templates on Home — hosted one-off
+        // events belong on the full Browse page.
+        setEvents(all.filter((e) => Number(e.booking_count) !== 1).slice(0, 8));
+      })
       .catch(() => setEvents([]));
   }, []);
 

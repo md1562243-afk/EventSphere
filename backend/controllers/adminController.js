@@ -253,11 +253,10 @@ exports.listPayments = async (req, res, next) => {
   }
 };
 
-// Confirming a payment marks the booking Confirmed. If the underlying Event is
-// still Pending (a private custom-request event), we attach this admin as a
-// record via setSupervisor only — we deliberately do NOT approve it, so it
-// never surfaces in the public showcase. Organizer-template events (already
-// Approved) are left untouched here.
+// Confirming a payment just confirms the payment and marks the booking
+// Confirmed. Event approval is a fully separate admin action from the Events
+// page — applies the same way to every event, organizer template or user
+// request alike.
 exports.confirmPayment = async (req, res, next) => {
   try {
     const payment = await Payment.findById(req.params.id);
@@ -267,13 +266,6 @@ exports.confirmPayment = async (req, res, next) => {
     await Booking.setStatus(payment.booking_id, 'Confirmed', req.auth.admin_id);
 
     const booking = await Booking.findById(payment.booking_id);
-    if (booking && booking.event_id) {
-      const event = await Event.findById(booking.event_id);
-      if (event && event.event_status === 'Pending') {
-        await Event.setSupervisor(event.event_id, req.auth.admin_id);
-      }
-    }
-
     if (booking) {
       emailService.userPaymentConfirmed(booking.user_email || '', 'your event');
     }

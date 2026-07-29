@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Search, SlidersHorizontal } from 'lucide-react';
 import api from '../api/axios';
 import EventCard from '../components/EventCard';
+import HostedEventCard from '../components/HostedEventCard';
 
 const SORT_OPTIONS = [
   { value: 'newest', label: 'Newest' },
@@ -40,6 +41,12 @@ export default function BrowseEvents() {
     e.preventDefault();
     fetchEvents();
   };
+
+  // An event with exactly 1 booking is treated as a one-off hosted event
+  // (user-requested); 0 or 2+ bookings is treated as a bookable organizer
+  // template. Best-effort split without a dedicated schema flag.
+  const offerEvents = events.filter((e) => Number(e.booking_count) !== 1);
+  const hostedEvents = events.filter((e) => Number(e.booking_count) === 1);
 
   return (
     <div className="container-app py-12">
@@ -102,9 +109,29 @@ export default function BrowseEvents() {
       ) : events.length === 0 ? (
         <div className="text-center py-20 text-body">No events match your search. Try adjusting your filters.</div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {events.map((e) => <EventCard key={e.event_id} event={e} />)}
-        </div>
+        <>
+          <section className="mb-14">
+            <h2 className="text-xl font-bold text-heading mb-5">What We Offer</h2>
+            {offerEvents.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {offerEvents.map((e) => <EventCard key={e.event_id} event={e} />)}
+              </div>
+            ) : (
+              <p className="text-body text-sm">No bookable event packages match your search.</p>
+            )}
+          </section>
+
+          <section>
+            <h2 className="text-xl font-bold text-heading mb-5">Events Hosted</h2>
+            {hostedEvents.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {hostedEvents.map((e) => <HostedEventCard key={e.event_id} event={e} />)}
+              </div>
+            ) : (
+              <p className="text-body text-sm">No hosted events match your search.</p>
+            )}
+          </section>
+        </>
       )}
     </div>
   );
