@@ -14,7 +14,6 @@ export default function EventDetails() {
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [method, setMethod] = useState('bKash');
-  const [eventName, setEventName] = useState('');
   const [eventDate, setEventDate] = useState('');
   const [eventTime, setEventTime] = useState('');
   const [eventVenue, setEventVenue] = useState('');
@@ -33,8 +32,8 @@ export default function EventDetails() {
       navigate('/login/user');
       return;
     }
-    if (!eventName.trim() || !eventDate || !eventTime || !eventVenue) {
-      setMessage({ type: 'error', text: 'Please fill in event name, date, time and venue' });
+    if (!eventDate || !eventTime || !eventVenue) {
+      setMessage({ type: 'error', text: 'Please fill in event date, time and venue' });
       return;
     }
     const selectedDate = new Date(eventDate);
@@ -48,18 +47,16 @@ export default function EventDetails() {
     setSubmitting(true);
     setMessage(null);
     try {
-      const res = await api.post('/users/bookings/custom', {
-        source_event_id: Number(id),
-        event_name: eventName,
-        event_type: event.event_type,
+      const res = await api.post('/users/bookings', {
+        event_id: Number(id),
         event_date: eventDate,
         event_time: eventTime,
         event_venue: eventVenue,
         payment_method: method
       });
-      setMessage({ type: 'success', text: 'Request submitted! Payment is pending admin verification.' });
+      setMessage({ type: 'success', text: `Booking created! Total ৳${res.data.total_amount}. Payment is pending admin verification.` });
     } catch (err) {
-      setMessage({ type: 'error', text: err.response?.data?.message || 'Request failed' });
+      setMessage({ type: 'error', text: err.response?.data?.message || 'Booking failed' });
     } finally {
       setSubmitting(false);
     }
@@ -83,7 +80,7 @@ export default function EventDetails() {
             <h3 className="font-bold mb-3">About this event type</h3>
             <p className="text-body text-sm leading-relaxed">
               This is a {event.event_type.toLowerCase()} event package starting at ৳{Number(event.ticket_price).toLocaleString()}.
-              Give it your own name and pick your preferred date, time and venue to request it for your own occasion.
+              Select your preferred date, time and venue to book this package for your own occasion.
             </p>
           </div>
         </div>
@@ -100,15 +97,6 @@ export default function EventDetails() {
             </div>
 
             <div className="space-y-3 mb-4">
-              <div>
-                <label className="block text-xs font-medium text-body mb-1">Event Name</label>
-                <input
-  type="text"
-  className="input-field"
-  value={eventName}
-  onChange={(e) => setEventName(e.target.value)}
-/>
-              </div>
               <div>
                 <label className="block text-xs font-medium text-body mb-1">Event Date</label>
                 <div className="relative">
@@ -155,7 +143,7 @@ export default function EventDetails() {
             )}
 
             <button onClick={handleBook} disabled={submitting} className="btn-accent w-full text-center disabled:opacity-60">
-              {submitting ? 'Submitting...' : 'Request This Event'}
+              {submitting ? 'Booking...' : 'Book Now'}
             </button>
           </div>
         </div>
