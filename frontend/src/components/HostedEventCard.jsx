@@ -13,7 +13,7 @@ export default function HostedEventCard({ event }) {
           </span>
         </div>
         <h3 className="font-bold text-heading text-base mb-3 line-clamp-1">{event.event_name}</h3>
-        <div className="space-y-1.5 text-sm text-body mb-4">
+        <div className="space-y-1.5 text-sm text-body">
           {event.hosted_date && (
             <div className="flex items-center gap-2">
               <CalendarDays size={14} /> {event.hosted_date}
@@ -30,7 +30,6 @@ export default function HostedEventCard({ event }) {
             </div>
           )}
         </div>
-        <p className="text-xs text-body italic">A custom event requested by a user — not open for booking</p>
       </div>
     </div>
   );
