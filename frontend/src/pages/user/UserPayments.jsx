@@ -21,7 +21,7 @@ export default function UserPayments() {
       <div className="card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-slate-50">
+            <thead className="bg-white/5">
               <tr className="text-left text-body">
                 <th className="py-3 px-4">Payment ID</th>
                 <th className="py-3 px-4">Method</th>
@@ -31,7 +31,7 @@ export default function UserPayments() {
             </thead>
             <tbody>
               {payments.map((p) => (
-                <tr key={p.payment_id} className="border-t border-slate-50">
+                <tr key={p.payment_id} className="border-t border-white/5">
                   <td className="py-3 px-4 text-body">#{p.payment_id}</td>
                   <td className="py-3 px-4">{p.payment_method}</td>
                   <td className="py-3 px-4">৳{Number(p.payment_amount).toLocaleString()}</td>

@@ -29,25 +29,25 @@ export default function AdminBookings() {
       <div className="card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-slate-50">
+            <thead className="bg-white/5">
               <tr className="text-left text-body">
                 <th className="py-3 px-4">Booking ID</th>
+                <th className="py-3 px-4">Status</th>
                 <th className="py-3 px-4">Event Date</th>
                 <th className="py-3 px-4">Event Time</th>
                 <th className="py-3 px-4">Venue</th>
-                <th className="py-3 px-4">Status</th>
                 <th className="py-3 px-4">Event ID</th>
                 <th className="py-3 px-4">User ID</th>
               </tr>
             </thead>
             <tbody>
               {bookings.map((b) => (
-                <tr key={b.booking_id} className="border-t border-slate-50">
+                <tr key={b.booking_id} className="border-t border-white/5">
                   <td className="py-3 px-4 text-body">#{b.booking_id}</td>
+                  <td className="py-3 px-4"><StatusBadge status={b.booking_status} /></td>
                   <td className="py-3 px-4">{b.event_date}</td>
                   <td className="py-3 px-4">{formatTime12hr(b.event_time)}</td>
                   <td className="py-3 px-4">{b.event_venue}</td>
-                  <td className="py-3 px-4"><StatusBadge status={b.booking_status} /></td>
                   <td className="py-3 px-4">{b.event_id ? `#${b.event_id}` : '—'}</td>
                   <td className="py-3 px-4">#{b.user_id}</td>
                 </tr>

@@ -134,8 +134,8 @@ export default function AdminProfile() {
             {admin.phones && admin.phones.length > 0 ? (
               <ul className="space-y-2">
                 {admin.phones.map((phone) => (
-                  <li key={phone} className="flex items-center justify-between border rounded-lg px-3 py-2">
-                    <span className="flex items-center gap-2 text-sm">
+                  <li key={phone} className="flex items-center justify-between border border-borderc rounded-lg px-3 py-2">
+                    <span className="flex items-center gap-2 text-sm text-heading">
                       <Phone size={14} className="text-body" /> {phone}
                     </span>
                     <button onClick={() => removePhone(phone)} className="text-errorc">

@@ -33,7 +33,7 @@ export default function AdminUsers() {
       <div className="card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-slate-50">
+            <thead className="bg-white/5">
               <tr className="text-left text-body">
                 <th className="py-3 px-4">ID</th>
                 <th className="py-3 px-4">Name</th>
@@ -44,7 +44,7 @@ export default function AdminUsers() {
             </thead>
             <tbody>
               {users.map((u) => (
-                <tr key={u.user_id} className="border-t border-slate-50">
+                <tr key={u.user_id} className="border-t border-white/5">
                   <td className="py-3 px-4 text-body">#{u.user_id}</td>
                   <td className="py-3 px-4 font-medium text-heading">{u.first_name} {u.last_name}</td>
                   <td className="py-3 px-4">{u.email}</td>

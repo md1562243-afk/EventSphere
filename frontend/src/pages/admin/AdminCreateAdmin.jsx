@@ -43,38 +43,38 @@ export default function AdminCreateAdmin() {
     <DashboardLayout title="Add New Admin" links={links}>
       <form onSubmit={handleSubmit} className="max-w-md space-y-4">
         <div>
-          <label className="block text-sm font-medium mb-1">First Name</label>
+          <label className="block text-sm font-medium text-heading mb-1">First Name</label>
           <input
             name="first_name"
             value={form.first_name}
             onChange={handleChange}
             required
-            className="w-full border rounded-lg px-3 py-2"
+            className="input-field"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Last Name</label>
+          <label className="block text-sm font-medium text-heading mb-1">Last Name</label>
           <input
             name="last_name"
             value={form.last_name}
             onChange={handleChange}
             required
-            className="w-full border rounded-lg px-3 py-2"
+            className="input-field"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Email</label>
+          <label className="block text-sm font-medium text-heading mb-1">Email</label>
           <input
             type="email"
             name="email"
             value={form.email}
             onChange={handleChange}
             required
-            className="w-full border rounded-lg px-3 py-2"
+            className="input-field"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Password</label>
+          <label className="block text-sm font-medium text-heading mb-1">Password</label>
           <input
             type="password"
             name="password"
@@ -82,12 +82,12 @@ export default function AdminCreateAdmin() {
             onChange={handleChange}
             required
             minLength={8}
-            className="w-full border rounded-lg px-3 py-2"
+            className="input-field"
           />
         </div>
 
         {status && (
-          <p className={status.type === 'success' ? 'text-green-600' : 'text-red-600'}>
+          <p className={status.type === 'success' ? 'text-success' : 'text-errorc'}>
             {status.message}
           </p>
         )}
@@ -95,7 +95,7 @@ export default function AdminCreateAdmin() {
         <button
           type="submit"
           disabled={loading}
-          className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg disabled:opacity-50"
+          className="btn-primary flex items-center gap-2 disabled:opacity-50"
         >
           <UserPlus size={18} />
           {loading ? 'Creating...' : 'Create Admin'}

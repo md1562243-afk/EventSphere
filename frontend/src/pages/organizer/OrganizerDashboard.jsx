@@ -26,9 +26,9 @@ export default function OrganizerDashboard() {
       {data ? (
         <>
           <div className="grid sm:grid-cols-3 gap-5 mb-8">
-            <StatCard icon={CalendarDays} label="Total Events" value={data.dashboard.total_events} accent="primary" />
-            <StatCard icon={TicketCheck} label="Total Bookings" value={data.dashboard.total_bookings} accent="secondary" />
-            <StatCard icon={DollarSign} label="Revenue" value={`৳${Number(data.dashboard.revenue).toLocaleString()}`} accent="primary" />
+            <StatCard icon={CalendarDays} label="Total Events" value={data.dashboard.total_events} />
+            <StatCard icon={TicketCheck} label="Total Bookings" value={data.dashboard.total_bookings} />
+            <StatCard icon={DollarSign} label="Revenue" value={`৳${Number(data.dashboard.revenue).toLocaleString()}`} />
           </div>
 
           <div className="card p-6">
@@ -36,24 +36,24 @@ export default function OrganizerDashboard() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-body border-b border-slate-100">
+                  <tr className="text-left text-body border-b border-white/5">
                     <th className="py-2">Booking ID</th>
                     <th className="py-2">Status</th>
                     <th className="py-2">Event Date</th>
                     <th className="py-2">Event Time</th>
                     <th className="py-2">Venue</th>
-                    <th className="py-2">Event ID</th>
+                    <th className="py-2">User ID</th>
                   </tr>
                 </thead>
                 <tbody>
                   {data.recent_bookings.map((b) => (
-                    <tr key={b.booking_id} className="border-b border-slate-50">
+                    <tr key={b.booking_id} className="border-b border-white/5">
                       <td className="py-3">#{b.booking_id}</td>
                       <td className="py-3"><StatusBadge status={b.booking_status} /></td>
                       <td className="py-3">{b.event_date}</td>
                       <td className="py-3">{formatTime12hr(b.event_time)}</td>
                       <td className="py-3">{b.event_venue}</td>
-                      <td className="py-3">{b.event_id ? `#${b.event_id}` : '—'}</td>
+                      <td className="py-3">#{b.user_id}</td>
                     </tr>
                   ))}
                   {data.recent_bookings.length === 0 && (

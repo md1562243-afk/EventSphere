@@ -42,6 +42,7 @@ h1, h2, h3, h4 {
 
 .input-field {
   @apply w-full rounded-input border border-borderc bg-surface px-4 py-3 text-sm text-heading placeholder:text-body focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition duration-250;
+  color-scheme: dark;
 }
 
 .badge {

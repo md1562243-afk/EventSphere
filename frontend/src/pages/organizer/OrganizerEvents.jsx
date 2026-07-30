@@ -40,7 +40,7 @@ export default function OrganizerEvents() {
       <div className="card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-slate-50">
+            <thead className="bg-white/5">
               <tr className="text-left text-body">
                 <th className="py-3 px-4">ID</th>
                 <th className="py-3 px-4">Event</th>
@@ -52,7 +52,7 @@ export default function OrganizerEvents() {
             </thead>
             <tbody>
               {events.map((e) => (
-                <tr key={e.event_id} className="border-t border-slate-50">
+                <tr key={e.event_id} className="border-t border-white/5">
                   <td className="py-3 px-4 text-body">#{e.event_id}</td>
                   <td className="py-3 px-4 font-medium text-heading">{e.event_name}</td>
                   <td className="py-3 px-4">{e.event_type}</td>
