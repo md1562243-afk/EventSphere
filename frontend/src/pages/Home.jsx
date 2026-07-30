@@ -34,7 +34,7 @@ export default function Home() {
 
         <div className="container-app relative py-20 lg:py-28 flex flex-col items-center text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-            <span className="badge bg-white text-primary shadow-soft mb-5">✨ Premium Event Platform</span>
+            <span className="badge bg-surface text-primary shadow-soft mb-5">✨ Premium Event Platform</span>
             <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight mb-5">
               Discover <span className="text-primary">•</span> Book <span className="text-secondary">•</span> Organize
             </h1>
@@ -78,7 +78,7 @@ export default function Home() {
       </section>
 
       {/* How it works */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-surface">
         <div className="container-app">
           <h2 className="text-2xl sm:text-3xl text-center mb-12">How It Works</h2>
           <div className="grid sm:grid-cols-3 gap-8">
@@ -91,7 +91,7 @@ export default function Home() {
                 transition={{ duration: 0.4, delay: i * 0.1 }}
                 className="card p-8 text-center"
               >
-                <div className="h-14 w-14 mx-auto rounded-2xl bg-primary/10 text-primary grid place-items-center mb-5">
+                <div className="h-14 w-14 mx-auto rounded-2xl bg-badgebg text-primary grid place-items-center mb-5">
                   <s.icon size={24} />
                 </div>
                 <h3 className="font-bold mb-2">{s.title}</h3>
@@ -103,7 +103,7 @@ export default function Home() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-surface">
         <div className="container-app">
           <div className="card p-10 sm:p-16 text-center bg-gradient-to-br from-primary to-secondary text-white">
             <h2 className="text-white text-2xl sm:text-3xl mb-3">Have an event in mind?</h2>
