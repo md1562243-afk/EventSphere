@@ -5,6 +5,8 @@ import api from '../../api/axios';
 
 const links = [
   { to: '/user/dashboard', label: 'Overview', end: true },
+  { to: '/events', label: 'Browse Events' },
+  { to: '/request-event', label: 'Request Custom Event' },
   { to: '/user/bookings', label: 'Booking History' },
   { to: '/user/payments', label: 'Payment History' },
   { to: '/user/profile', label: 'Profile' }
@@ -75,7 +77,7 @@ export default function UserProfile() {
           </div>
           <div>
             <label className="block text-sm font-medium text-heading mb-1">Email</label>
-            <input className="input-field bg-slate-50" value={profile.email} disabled />
+            <input className="input-field bg-searchbg" value={profile.email} disabled />
           </div>
           {message && <p className="text-success text-sm">{message}</p>}
           <button type="submit" className="btn-primary">Save Changes</button>
@@ -86,7 +88,7 @@ export default function UserProfile() {
             <h3 className="font-bold mb-4">Phone Numbers</h3>
             <div className="space-y-2 mb-4">
               {profile.phones?.map((phone) => (
-                <div key={phone} className="flex items-center justify-between bg-slate-50 rounded-btn px-4 py-2 text-sm">
+                <div key={phone} className="flex items-center justify-between bg-searchbg rounded-btn px-4 py-2 text-sm text-heading">
                   {phone}
                   <button onClick={() => removePhone(phone)}><Trash2 size={14} className="text-errorc" /></button>
                 </div>
