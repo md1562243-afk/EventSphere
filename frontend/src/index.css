@@ -19,15 +19,15 @@ h1, h2, h3, h4 {
 }
 
 .btn-primary {
-  @apply bg-primary text-bgapp font-semibold rounded-btn px-6 py-3 transition duration-250 hover:shadow-glow hover:-translate-y-0.5 active:translate-y-0;
+  @apply bg-primary text-white font-semibold rounded-btn px-6 py-3 transition duration-250 hover:bg-primaryHover hover:shadow-soft hover:-translate-y-0.5 active:translate-y-0;
 }
 
 .btn-accent {
-  @apply bg-accent text-bgapp font-semibold rounded-btn px-6 py-3 transition duration-250 hover:shadow-glow hover:-translate-y-0.5 active:translate-y-0;
+  @apply bg-accent text-white font-semibold rounded-btn px-6 py-3 transition duration-250 hover:shadow-soft hover:-translate-y-0.5 active:translate-y-0;
 }
 
 .btn-outline {
-  @apply border border-primary text-primary font-semibold rounded-btn px-6 py-3 transition duration-250 hover:bg-primary hover:text-bgapp;
+  @apply border border-primary text-primary font-semibold rounded-btn px-6 py-3 transition duration-250 hover:bg-primary hover:text-white;
 }
 
 .card {
@@ -35,24 +35,23 @@ h1, h2, h3, h4 {
 }
 
 .glass {
-  background: rgba(10, 10, 10, 0.65);
+  background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
 
 .input-field {
-  @apply w-full rounded-input border border-borderc bg-surface px-4 py-3 text-sm text-heading placeholder:text-body focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition duration-250;
-  color-scheme: dark;
+  @apply w-full rounded-input border border-borderc bg-searchbg px-4 py-3 text-sm text-heading placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition duration-250;
 }
 
 .badge {
-  @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold;
+  @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold bg-badgebg text-badgetext;
 }
 
 ::-webkit-scrollbar {
   width: 8px;
 }
 ::-webkit-scrollbar-thumb {
-  background: #D4AF37;
+  background: #D87DE5;
   border-radius: 999px;
 }

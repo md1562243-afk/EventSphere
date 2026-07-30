@@ -6,6 +6,8 @@ import { formatTime12hr } from '../../utils/formatTime';
 
 const links = [
   { to: '/user/dashboard', label: 'Overview', end: true },
+  { to: '/events', label: 'Browse Events' },
+  { to: '/request-event', label: 'Request Custom Event' },
   { to: '/user/bookings', label: 'Booking History' },
   { to: '/user/payments', label: 'Payment History' },
   { to: '/user/profile', label: 'Profile' }
@@ -31,7 +33,7 @@ export default function UserBookings() {
       <div className="card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-white/5">
+            <thead className="bg-searchbg">
               <tr className="text-left text-body">
                 <th className="py-3 px-4">Booking ID</th>
                 <th className="py-3 px-4">Status</th>
@@ -44,7 +46,7 @@ export default function UserBookings() {
             </thead>
             <tbody>
               {bookings.map((b) => (
-                <tr key={b.booking_id} className="border-t border-white/5">
+                <tr key={b.booking_id} className="border-t border-divider">
                   <td className="py-3 px-4 text-body">#{b.booking_id}</td>
                   <td className="py-3 px-4"><StatusBadge status={b.booking_status} /></td>
                   <td className="py-3 px-4">{b.event_date}</td>

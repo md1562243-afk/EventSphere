@@ -4,6 +4,8 @@ import api from '../../api/axios';
 
 const links = [
   { to: '/user/dashboard', label: 'Overview', end: true },
+  { to: '/events', label: 'Browse Events' },
+  { to: '/request-event', label: 'Request Custom Event' },
   { to: '/user/bookings', label: 'Booking History' },
   { to: '/user/payments', label: 'Payment History' },
   { to: '/user/profile', label: 'Profile' }
@@ -21,7 +23,7 @@ export default function UserPayments() {
       <div className="card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-white/5">
+            <thead className="bg-searchbg">
               <tr className="text-left text-body">
                 <th className="py-3 px-4">Payment ID</th>
                 <th className="py-3 px-4">Method</th>
@@ -31,7 +33,7 @@ export default function UserPayments() {
             </thead>
             <tbody>
               {payments.map((p) => (
-                <tr key={p.payment_id} className="border-t border-white/5">
+                <tr key={p.payment_id} className="border-t border-divider">
                   <td className="py-3 px-4 text-body">#{p.payment_id}</td>
                   <td className="py-3 px-4">{p.payment_method}</td>
                   <td className="py-3 px-4">৳{Number(p.payment_amount).toLocaleString()}</td>

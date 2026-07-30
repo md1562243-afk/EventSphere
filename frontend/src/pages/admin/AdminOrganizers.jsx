@@ -40,7 +40,7 @@ export default function AdminOrganizers() {
             key={t}
             onClick={() => setTab(t)}
             className={`text-sm font-semibold rounded-full px-4 py-1.5 transition duration-250 ${
-              tab === t ? 'bg-primary text-bgapp' : 'bg-white/5 text-body hover:bg-primary/10'
+              tab === t ? 'bg-primary text-white' : 'bg-searchbg text-body hover:bg-primary/10'
             }`}
           >
             {t}
@@ -51,7 +51,7 @@ export default function AdminOrganizers() {
       <div className="card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-white/5">
+            <thead className="bg-searchbg">
               <tr className="text-left text-body">
                 <th className="py-3 px-4">ID</th>
                 <th className="py-3 px-4">Name</th>
@@ -63,7 +63,7 @@ export default function AdminOrganizers() {
             </thead>
             <tbody>
               {organizers.map((o) => (
-                <tr key={o.organizer_id} className="border-t border-white/5">
+                <tr key={o.organizer_id} className="border-t border-divider">
                   <td className="py-3 px-4 text-body">#{o.organizer_id}</td>
                   <td className="py-3 px-4 font-medium text-heading">{o.first_name} {o.last_name}</td>
                   <td className="py-3 px-4">{o.email}</td>

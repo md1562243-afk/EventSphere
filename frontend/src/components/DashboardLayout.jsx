@@ -11,7 +11,7 @@ export default function DashboardLayout({ title, links, children }) {
   return (
     <div className="min-h-screen bg-bgapp">
       <div className="flex">
-        <aside className="hidden md:flex flex-col w-64 shrink-0 min-h-screen bg-surface border-r border-borderc p-6">
+        <aside className="hidden md:flex flex-col w-64 shrink-0 min-h-screen bg-sidebar border-r border-borderc p-6">
           <div className="mb-8">
             <p className="text-xs uppercase tracking-[0.15em] text-primary font-semibold">{role} Portal</p>
             <h2 className="font-bold text-heading text-lg">{profile?.first_name} {profile?.last_name}</h2>
@@ -25,7 +25,7 @@ export default function DashboardLayout({ title, links, children }) {
                 end={link.end}
                 className={({ isActive }) =>
                   `rounded-btn px-4 py-2.5 text-sm font-medium transition duration-250 ${
-                    isActive ? 'bg-primary text-bgapp' : 'text-body hover:bg-primary/10 hover:text-primary'
+                    isActive ? 'bg-primary text-white' : 'text-body hover:bg-primary/10 hover:text-primary'
                   }`
                 }
               >
