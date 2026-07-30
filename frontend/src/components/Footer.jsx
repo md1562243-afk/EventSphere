@@ -4,7 +4,7 @@ import { Calendar, Mail, MapPin, Phone } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="bg-heading text-slate-300 mt-24">
+    <footer className="bg-heading text-white/60 mt-24">
       <div className="container-app py-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
         <div>
           <div className="flex items-center gap-2 font-extrabold text-xl text-white mb-3">
@@ -13,24 +13,24 @@ export default function Footer() {
             </span>
             EventSphere
           </div>
-          <p className="text-sm text-slate-400">Discover • Book • Organize — one platform for every event.</p>
+          <p className="text-sm text-white/40">Discover • Book • Organize — one platform for every event.</p>
         </div>
 
         <div>
           <h4 className="text-white font-semibold mb-4 text-sm tracking-wide">Platform</h4>
           <ul className="space-y-2 text-sm">
-            <li><Link to="/events" className="hover:text-secondary">Browse Events</Link></li>
-            <li><Link to="/request-event" className="hover:text-secondary">Request Custom Event</Link></li>
-            <li><Link to="/register" className="hover:text-secondary">Become an Organizer</Link></li>
+            <li><Link to="/events" className="hover:text-primary transition duration-250">Browse Events</Link></li>
+            <li><Link to="/request-event" className="hover:text-primary transition duration-250">Request Custom Event</Link></li>
+            <li><Link to="/register" className="hover:text-primary transition duration-250">Become an Organizer</Link></li>
           </ul>
         </div>
 
         <div>
           <h4 className="text-white font-semibold mb-4 text-sm tracking-wide">Company</h4>
           <ul className="space-y-2 text-sm">
-            <li><Link to="/about" className="hover:text-secondary">About</Link></li>
-            <li><Link to="/contact" className="hover:text-secondary">Contact</Link></li>
-            <li><Link to="/login/admin" className="hover:text-secondary">Admin Portal</Link></li>
+            <li><Link to="/about" className="hover:text-primary transition duration-250">About</Link></li>
+            <li><Link to="/contact" className="hover:text-primary transition duration-250">Contact</Link></li>
+            <li><Link to="/login/admin" className="hover:text-primary transition duration-250">Admin Portal</Link></li>
           </ul>
         </div>
 
@@ -43,7 +43,7 @@ export default function Footer() {
           </ul>
         </div>
       </div>
-      <div className="border-t border-white/10 py-6 text-center text-xs text-slate-500">
+      <div className="border-t border-white/10 py-6 text-center text-xs text-white/30">
         © {new Date().getFullYear()} EventSphere. All rights reserved.
       </div>
     </footer>
