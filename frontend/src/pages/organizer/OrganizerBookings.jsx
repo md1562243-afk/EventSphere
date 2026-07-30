@@ -32,6 +32,7 @@ export default function OrganizerBookings() {
                 <th className="py-3 px-4">Event Time</th>
                 <th className="py-3 px-4">Venue</th>
                 <th className="py-3 px-4">Event ID</th>
+                <th className="py-3 px-4">User ID</th>
               </tr>
             </thead>
             <tbody>
@@ -43,10 +44,11 @@ export default function OrganizerBookings() {
                   <td className="py-3 px-4">{formatTime12hr(b.event_time)}</td>
                   <td className="py-3 px-4">{b.event_venue}</td>
                   <td className="py-3 px-4">{b.event_id ? `#${b.event_id}` : '—'}</td>
+                  <td className="py-3 px-4">#{b.user_id}</td>
                 </tr>
               ))}
               {bookings.length === 0 && (
-                <tr><td colSpan={6} className="py-8 text-center text-body">No bookings yet.</td></tr>
+                <tr><td colSpan={7} className="py-8 text-center text-body">No bookings yet.</td></tr>
               )}
             </tbody>
           </table>

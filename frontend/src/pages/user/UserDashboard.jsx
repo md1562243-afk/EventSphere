@@ -4,6 +4,7 @@ import DashboardLayout from '../../components/DashboardLayout';
 import StatCard from '../../components/StatCard';
 import StatusBadge from '../../components/StatusBadge';
 import api from '../../api/axios';
+import { formatTime12hr } from '../../utils/formatTime';
 
 const links = [
   { to: '/user/dashboard', label: 'Overview', end: true },
@@ -36,21 +37,27 @@ export default function UserDashboard() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="text-left text-body border-b border-slate-100">
-                    <th className="py-2">Event</th>
-                    <th className="py-2">Date</th>
+                    <th className="py-2">Booking ID</th>
                     <th className="py-2">Status</th>
+                    <th className="py-2">Event Date</th>
+                    <th className="py-2">Event Time</th>
+                    <th className="py-2">Venue</th>
+                    <th className="py-2">Event ID</th>
                   </tr>
                 </thead>
                 <tbody>
                   {data.recent_bookings.map((b) => (
                     <tr key={b.booking_id} className="border-b border-slate-50">
-                      <td className="py-3">{b.event_name || 'Custom Event'}</td>
-                      <td className="py-3">{b.event_date}</td>
+                      <td className="py-3">#{b.booking_id}</td>
                       <td className="py-3"><StatusBadge status={b.booking_status} /></td>
+                      <td className="py-3">{b.event_date}</td>
+                      <td className="py-3">{formatTime12hr(b.event_time)}</td>
+                      <td className="py-3">{b.event_venue}</td>
+                      <td className="py-3">{b.event_id ? `#${b.event_id}` : '—'}</td>
                     </tr>
                   ))}
                   {data.recent_bookings.length === 0 && (
-                    <tr><td colSpan={3} className="py-6 text-center text-body">No bookings yet.</td></tr>
+                    <tr><td colSpan={6} className="py-6 text-center text-body">No bookings yet.</td></tr>
                   )}
                 </tbody>
               </table>
