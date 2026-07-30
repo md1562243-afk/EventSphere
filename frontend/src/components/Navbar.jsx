@@ -25,7 +25,7 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
+    <header className="sticky top-0 z-50 bg-surface/80 backdrop-blur-md border-b border-borderc">
       <div className="container-app flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center gap-2 font-extrabold text-xl text-heading">
           <span className="grid place-items-center h-9 w-9 rounded-xl bg-gradient-to-br from-primary to-secondary text-white">
@@ -83,7 +83,7 @@ export default function Navbar() {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="lg:hidden overflow-hidden border-t border-slate-100 bg-white"
+            className="lg:hidden overflow-hidden border-t border-borderc bg-surface"
           >
             <div className="container-app py-4 flex flex-col gap-4">
               {navLinks.map((link) => (
@@ -91,7 +91,7 @@ export default function Navbar() {
                   {link.label}
                 </NavLink>
               ))}
-              <div className="h-px bg-slate-100" />
+              <div className="h-px bg-borderc" />
               {isAuthenticated ? (
                 <>
                   <Link to={dashboardPath} onClick={() => setOpen(false)} className="text-sm font-semibold text-heading">
