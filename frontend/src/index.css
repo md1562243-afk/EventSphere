@@ -19,29 +19,29 @@ h1, h2, h3, h4 {
 }
 
 .btn-primary {
-  @apply bg-primary text-white font-semibold rounded-btn px-6 py-3 transition duration-250 hover:shadow-soft hover:-translate-y-0.5 active:translate-y-0;
+  @apply bg-primary text-bgapp font-semibold rounded-btn px-6 py-3 transition duration-250 hover:shadow-glow hover:-translate-y-0.5 active:translate-y-0;
 }
 
 .btn-accent {
-  @apply bg-accent text-heading font-semibold rounded-btn px-6 py-3 transition duration-250 hover:shadow-soft hover:-translate-y-0.5 active:translate-y-0;
+  @apply bg-accent text-bgapp font-semibold rounded-btn px-6 py-3 transition duration-250 hover:shadow-glow hover:-translate-y-0.5 active:translate-y-0;
 }
 
 .btn-outline {
-  @apply border border-primary text-primary font-semibold rounded-btn px-6 py-3 transition duration-250 hover:bg-primary hover:text-white;
+  @apply border border-primary text-primary font-semibold rounded-btn px-6 py-3 transition duration-250 hover:bg-primary hover:text-bgapp;
 }
 
 .card {
-  @apply bg-surface rounded-card shadow-soft transition duration-250;
+  @apply bg-surface border border-borderc rounded-card shadow-soft transition duration-250;
 }
 
 .glass {
-  background: rgba(255, 255, 255, 0.65);
+  background: rgba(10, 10, 10, 0.65);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
 
 .input-field {
-  @apply w-full rounded-input border border-slate-200 px-4 py-3 text-sm text-heading placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition duration-250;
+  @apply w-full rounded-input border border-borderc bg-surface px-4 py-3 text-sm text-heading placeholder:text-body focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition duration-250;
 }
 
 .badge {
@@ -52,6 +52,6 @@ h1, h2, h3, h4 {
   width: 8px;
 }
 ::-webkit-scrollbar-thumb {
-  background: #c7d2fe;
+  background: #D4AF37;
   border-radius: 999px;
 }
