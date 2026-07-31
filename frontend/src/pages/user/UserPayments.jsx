@@ -4,8 +4,6 @@ import api from '../../api/axios';
 
 const links = [
   { to: '/user/dashboard', label: 'Overview', end: true },
-  { to: '/events', label: 'Browse Events' },
-  { to: '/request-event', label: 'Request Custom Event' },
   { to: '/user/bookings', label: 'Booking History' },
   { to: '/user/payments', label: 'Payment History' },
   { to: '/user/profile', label: 'Profile' }

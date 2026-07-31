@@ -6,8 +6,6 @@ import { formatTime12hr } from '../../utils/formatTime';
 
 const links = [
   { to: '/user/dashboard', label: 'Overview', end: true },
-  { to: '/events', label: 'Browse Events' },
-  { to: '/request-event', label: 'Request Custom Event' },
   { to: '/user/bookings', label: 'Booking History' },
   { to: '/user/payments', label: 'Payment History' },
   { to: '/user/profile', label: 'Profile' }
