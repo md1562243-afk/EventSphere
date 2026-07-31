@@ -1,5 +1,4 @@
-CREATE DATABASE IF NOT EXISTS eventsphere
-  CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS eventsphere;
 
 USE eventsphere;
 
@@ -9,15 +8,16 @@ CREATE TABLE IF NOT EXISTS Admin (
   last_name    VARCHAR(100) NOT NULL,
   email        VARCHAR(150) NOT NULL UNIQUE,
   password     VARCHAR(255) NOT NULL
-) ENGINE=InnoDB;
+);
 
 CREATE TABLE IF NOT EXISTS Admin_Phone (
   admin_id  INT NOT NULL,
   phone_no  VARCHAR(20) NOT NULL,
   PRIMARY KEY (admin_id, phone_no),
   FOREIGN KEY (admin_id) REFERENCES Admin(admin_id)
-    ON UPDATE CASCADE ON DELETE CASCADE
-) ENGINE=InnoDB;
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
+);
 
 CREATE TABLE IF NOT EXISTS User (
   user_id      INT AUTO_INCREMENT PRIMARY KEY,
@@ -27,16 +27,18 @@ CREATE TABLE IF NOT EXISTS User (
   password     VARCHAR(255) NOT NULL,
   admin_id     INT NULL,
   FOREIGN KEY (admin_id) REFERENCES Admin(admin_id)
-    ON UPDATE CASCADE ON DELETE SET NULL
-) ENGINE=InnoDB;
+    ON UPDATE CASCADE
+    ON DELETE SET NULL
+);
 
 CREATE TABLE IF NOT EXISTS User_Phone (
   user_id   INT NOT NULL,
   phone_no  VARCHAR(20) NOT NULL,
   PRIMARY KEY (user_id, phone_no),
   FOREIGN KEY (user_id) REFERENCES User(user_id)
-    ON UPDATE CASCADE ON DELETE CASCADE
-) ENGINE=InnoDB;
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
+);
 
 CREATE TABLE IF NOT EXISTS Organizer (
   organizer_id  INT AUTO_INCREMENT PRIMARY KEY,
@@ -47,16 +49,18 @@ CREATE TABLE IF NOT EXISTS Organizer (
   admin_id      INT NULL,
   status        ENUM('Pending','Approved','Rejected') NOT NULL DEFAULT 'Pending',
   FOREIGN KEY (admin_id) REFERENCES Admin(admin_id)
-    ON UPDATE CASCADE ON DELETE SET NULL
-) ENGINE=InnoDB;
+    ON UPDATE CASCADE
+    ON DELETE SET NULL
+);
 
 CREATE TABLE IF NOT EXISTS Organizer_Phone (
   organizer_id  INT NOT NULL,
   phone_no      VARCHAR(20) NOT NULL,
   PRIMARY KEY (organizer_id, phone_no),
   FOREIGN KEY (organizer_id) REFERENCES Organizer(organizer_id)
-    ON UPDATE CASCADE ON DELETE CASCADE
-) ENGINE=InnoDB;
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
+);
 
 CREATE TABLE IF NOT EXISTS Event (
   event_id       INT AUTO_INCREMENT PRIMARY KEY,
@@ -67,10 +71,12 @@ CREATE TABLE IF NOT EXISTS Event (
   organizer_id   INT NOT NULL,
   admin_id       INT NULL,
   FOREIGN KEY (organizer_id) REFERENCES Organizer(organizer_id)
-    ON UPDATE CASCADE ON DELETE RESTRICT,
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
   FOREIGN KEY (admin_id) REFERENCES Admin(admin_id)
-    ON UPDATE CASCADE ON DELETE SET NULL
-) ENGINE=InnoDB;
+    ON UPDATE CASCADE
+    ON DELETE SET NULL
+);
 
 CREATE TABLE IF NOT EXISTS Booking (
   booking_id       INT AUTO_INCREMENT PRIMARY KEY,
@@ -82,12 +88,15 @@ CREATE TABLE IF NOT EXISTS Booking (
   user_id          INT NOT NULL,
   admin_id         INT NULL,
   FOREIGN KEY (event_id) REFERENCES Event(event_id)
-    ON UPDATE CASCADE ON DELETE SET NULL,
+    ON UPDATE CASCADE
+    ON DELETE SET NULL,
   FOREIGN KEY (user_id) REFERENCES User(user_id)
-    ON UPDATE CASCADE ON DELETE CASCADE,
+    ON UPDATE CASCADE
+    ON DELETE CASCADE,
   FOREIGN KEY (admin_id) REFERENCES Admin(admin_id)
-    ON UPDATE CASCADE ON DELETE SET NULL
-) ENGINE=InnoDB;
+    ON UPDATE CASCADE
+    ON DELETE SET NULL
+);
 
 CREATE TABLE IF NOT EXISTS Payment (
   payment_id      INT AUTO_INCREMENT PRIMARY KEY,
@@ -96,17 +105,21 @@ CREATE TABLE IF NOT EXISTS Payment (
   booking_id      INT NOT NULL,
   admin_id        INT NULL,
   FOREIGN KEY (booking_id) REFERENCES Booking(booking_id)
-    ON UPDATE CASCADE ON DELETE CASCADE,
+    ON UPDATE CASCADE
+    ON DELETE CASCADE,
   FOREIGN KEY (admin_id) REFERENCES Admin(admin_id)
-    ON UPDATE CASCADE ON DELETE SET NULL
-) ENGINE=InnoDB;
+    ON UPDATE CASCADE
+    ON DELETE SET NULL
+);
 
 CREATE TABLE IF NOT EXISTS Browse (
-  event_id    INT NOT NULL,
-  user_id     INT NOT NULL,
+  event_id  INT NOT NULL,
+  user_id   INT NOT NULL,
   PRIMARY KEY (event_id, user_id),
   FOREIGN KEY (event_id) REFERENCES Event(event_id)
-    ON UPDATE CASCADE ON DELETE CASCADE,
+    ON UPDATE CASCADE
+    ON DELETE CASCADE,
   FOREIGN KEY (user_id) REFERENCES User(user_id)
-    ON UPDATE CASCADE ON DELETE CASCADE
-) ENGINE=InnoDB;
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
+);
