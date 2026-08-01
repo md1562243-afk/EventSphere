@@ -62,7 +62,7 @@ export default function EventCard({ event }) {
                 <p className="text-lg font-extrabold text-price">৳{Number(event.ticket_price).toLocaleString()}</p>
               </div>
               <span className="inline-flex items-center gap-1 text-xs font-bold text-primary group-hover:gap-2 transition-all">
-                Request <ArrowUpRight size={14} />
+                Book <ArrowUpRight size={14} />
               </span>
             </div>
           </div>
