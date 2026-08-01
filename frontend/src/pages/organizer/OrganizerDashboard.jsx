@@ -42,6 +42,7 @@ export default function OrganizerDashboard() {
                     <th className="py-2">Event Time</th>
                     <th className="py-2">Venue</th>
                     <th className="py-2">Status</th>
+                    <th className="py-2">Event ID</th>
                     <th className="py-2">User ID</th>
                   </tr>
                 </thead>
@@ -53,11 +54,12 @@ export default function OrganizerDashboard() {
                       <td className="py-3">{formatTime12hr(b.event_time)}</td>
                       <td className="py-3">{b.event_venue}</td>
                       <td className="py-3"><StatusBadge status={b.booking_status} /></td>
+                      <td className="py-3">{b.event_id ? b.event_id : '—'}</td>
                       <td className="py-3">{b.user_id}</td>
                     </tr>
                   ))}
                   {data.recent_bookings.length === 0 && (
-                    <tr><td colSpan={6} className="py-6 text-center text-body">No bookings yet.</td></tr>
+                    <tr><td colSpan={7} className="py-6 text-center text-body">No bookings yet.</td></tr>
                   )}
                 </tbody>
               </table>
