@@ -45,7 +45,7 @@ export default function AdminUsers() {
             <tbody>
               {users.map((u) => (
                 <tr key={u.user_id} className="border-t border-divider">
-                  <td className="py-3 px-4 text-body">#{u.user_id}</td>
+                  <td className="py-3 px-4 text-body">{u.user_id}</td>
                   <td className="py-3 px-4 font-medium text-heading">{u.first_name} {u.last_name}</td>
                   <td className="py-3 px-4">{u.email}</td>
                   <td className="py-3 px-4">{u.phone_numbers || '—'}</td>

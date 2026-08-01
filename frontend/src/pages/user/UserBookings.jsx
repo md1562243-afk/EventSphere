@@ -45,12 +45,12 @@ export default function UserBookings() {
             <tbody>
               {bookings.map((b) => (
                 <tr key={b.booking_id} className="border-t border-divider">
-                  <td className="py-3 px-4 text-body">#{b.booking_id}</td>
+                  <td className="py-3 px-4 text-body">{b.booking_id}</td>
                   <td className="py-3 px-4">{b.event_date}</td>
                   <td className="py-3 px-4">{formatTime12hr(b.event_time)}</td>
                   <td className="py-3 px-4">{b.event_venue}</td>
                   <td className="py-3 px-4"><StatusBadge status={b.booking_status} /></td>
-                  <td className="py-3 px-4">{b.event_id ? `#${b.event_id}` : '—'}</td>
+                  <td className="py-3 px-4">{b.event_id ? b.event_id : '—'}</td>
                   <td className="py-3 px-4">
                     {(b.booking_status === 'Pending' || b.booking_status === 'Confirmed') && (
                       <button onClick={() => cancel(b.booking_id)} className="text-errorc text-xs font-semibold hover:underline">

@@ -46,10 +46,10 @@ export default function AdminPayments() {
             <tbody>
               {payments.map((p) => (
                 <tr key={p.payment_id} className="border-t border-divider">
-                  <td className="py-3 px-4 text-body">#{p.payment_id}</td>
+                  <td className="py-3 px-4 text-body">{p.payment_id}</td>
                   <td className="py-3 px-4">{p.payment_method}</td>
                   <td className="py-3 px-4">৳{Number(p.payment_amount).toLocaleString()}</td>
-                  <td className="py-3 px-4">#{p.booking_id}</td>
+                  <td className="py-3 px-4">{p.booking_id}</td>
                   <td className="py-3 px-4">
                     {!p.admin_id && (
                       <button onClick={() => confirm(p.payment_id)} className="text-success text-xs font-semibold hover:underline">

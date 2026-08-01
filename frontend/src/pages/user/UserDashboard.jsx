@@ -48,12 +48,12 @@ export default function UserDashboard() {
                 <tbody>
                   {data.recent_bookings.map((b) => (
                     <tr key={b.booking_id} className="border-b border-divider">
-                      <td className="py-3">#{b.booking_id}</td>
+                      <td className="py-3">{b.booking_id}</td>
                       <td className="py-3">{b.event_date}</td>
                       <td className="py-3">{formatTime12hr(b.event_time)}</td>
                       <td className="py-3">{b.event_venue}</td>
                       <td className="py-3"><StatusBadge status={b.booking_status} /></td>
-                      <td className="py-3">{b.event_id ? `#${b.event_id}` : '—'}</td>
+                      <td className="py-3">{b.event_id ? b.event_id : '—'}</td>
                     </tr>
                   ))}
                   {data.recent_bookings.length === 0 && (

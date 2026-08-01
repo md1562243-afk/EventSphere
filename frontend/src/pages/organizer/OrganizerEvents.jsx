@@ -53,7 +53,7 @@ export default function OrganizerEvents() {
             <tbody>
               {events.map((e) => (
                 <tr key={e.event_id} className="border-t border-divider">
-                  <td className="py-3 px-4 text-body">#{e.event_id}</td>
+                  <td className="py-3 px-4 text-body">{e.event_id}</td>
                   <td className="py-3 px-4 font-medium text-heading">{e.event_name}</td>
                   <td className="py-3 px-4">{e.event_type}</td>
                   <td className="py-3 px-4">৳{Number(e.ticket_price).toLocaleString()}</td>

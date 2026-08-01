@@ -63,7 +63,7 @@ export default function AdminOrganizers() {
             <tbody>
               {organizers.map((o) => (
                 <tr key={o.organizer_id} className="border-t border-divider">
-                  <td className="py-3 px-4 text-body">#{o.organizer_id}</td>
+                  <td className="py-3 px-4 text-body">{o.organizer_id}</td>
                   <td className="py-3 px-4 font-medium text-heading">{o.first_name} {o.last_name}</td>
                   <td className="py-3 px-4">{o.email}</td>
                   <td className="py-3 px-4">{o.phone_numbers || '—'}</td>

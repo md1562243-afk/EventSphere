@@ -15,7 +15,7 @@ export default function DashboardLayout({ title, links, children }) {
           <div className="mb-8">
             <p className="text-xs uppercase tracking-[0.15em] text-primary font-semibold">{role} Portal</p>
             <h2 className="font-bold text-heading text-lg">{profile?.first_name} {profile?.last_name}</h2>
-            {id !== undefined && <p className="text-xs text-body mt-0.5">ID: #{id}</p>}
+            {id !== undefined && <p className="text-xs text-body mt-0.5">ID: {id}</p>}
           </div>
           <nav className="flex flex-col gap-1">
             {links.map((link) => (
