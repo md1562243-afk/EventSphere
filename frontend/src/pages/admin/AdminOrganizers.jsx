@@ -14,7 +14,7 @@ const links = [
   { to: '/admin/profile', label: 'Profile' }
 ];
 
-const TABS = ['Pending', 'Approved', 'Rejected'];
+const TABS = ['Pending', 'Approved'];
 
 export default function AdminOrganizers() {
   const [tab, setTab] = useState('Pending');
@@ -29,7 +29,6 @@ export default function AdminOrganizers() {
   useEffect(load, [tab]);
 
   const approve = async (id) => { await api.put(`/admin/organizers/${id}/approve`); load(); };
-  const reject = async (id) => { await api.put(`/admin/organizers/${id}/reject`); load(); };
   const remove = async (id) => { if (window.confirm('Remove this organizer?')) { await api.delete(`/admin/organizers/${id}`); load(); } };
 
   return (
@@ -72,10 +71,7 @@ export default function AdminOrganizers() {
                   <td className="py-3 px-4">
                     <div className="flex gap-3 text-xs font-semibold">
                       {o.status === 'Pending' && (
-                        <>
-                          <button onClick={() => approve(o.organizer_id)} className="text-success hover:underline">Approve</button>
-                          <button onClick={() => reject(o.organizer_id)} className="text-errorc hover:underline">Reject</button>
-                        </>
+                        <button onClick={() => approve(o.organizer_id)} className="text-success hover:underline">Approve</button>
                       )}
                       <button onClick={() => remove(o.organizer_id)} className="text-body hover:underline">Remove</button>
                     </div>
