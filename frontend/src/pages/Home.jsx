@@ -15,12 +15,14 @@ export default function Home() {
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
-    api.get('/events', { params: { limit: 12, sort: 'newest' } })
+    // Fetch a larger pool since "hosted" (booking_count === 1) events get
+    // filtered out below — a small limit here could leave fewer than 8
+    // bookable templates even when more exist.
+    api.get('/events', { params: { limit: 100, sort: 'newest' } })
       .then((res) => {
         const all = res.data.events || [];
-        // Only show bookable organizer templates on Home — hosted one-off
-        // events belong on the full Browse page.
-        setEvents(all.filter((e) => Number(e.booking_count) !== 1).slice(0, 8));
+        const bookable = all.filter((e) => Number(e.booking_count) !== 1);
+        setEvents(bookable.slice(0, 8));
       })
       .catch(() => setEvents([]));
   }, []);
