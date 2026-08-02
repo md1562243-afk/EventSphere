@@ -24,6 +24,7 @@ const SORT_OPTIONS = [
 export default function AdminEvents() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState('newest');
 
@@ -46,8 +47,13 @@ export default function AdminEvents() {
     }
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setSearch(searchInput.trim());
+  };
+
   const filtered = events
-    .filter((e) => (search ? String(e.event_id).includes(search.trim()) : true))
+    .filter((e) => (search ? String(e.event_id).includes(search) : true))
     .sort((a, b) => {
       if (sort === 'lowest_price') return Number(a.ticket_price) - Number(b.ticket_price);
       if (sort === 'highest_price') return Number(b.ticket_price) - Number(a.ticket_price);
@@ -61,15 +67,18 @@ export default function AdminEvents() {
       </p>
 
       <div className="flex flex-col sm:flex-row gap-3 mb-5">
-        <div className="relative flex-1">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted pointer-events-none" size={16} />
-          <input
-            className="input-field !pl-10"
-            placeholder="Search by Event ID..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
+        <form onSubmit={handleSearch} className="flex gap-2 flex-1">
+          <div className="relative flex-1">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted pointer-events-none" size={16} />
+            <input
+              className="input-field !pl-10"
+              placeholder="Search by Event ID..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+            />
+          </div>
+          <button type="submit" className="btn-primary !px-5 !py-2.5 text-sm">Search</button>
+        </form>
         <div className="flex gap-2">
           {SORT_OPTIONS.map((opt) => (
             <button

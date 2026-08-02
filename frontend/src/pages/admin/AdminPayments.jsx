@@ -17,6 +17,7 @@ const links = [
 export default function AdminPayments() {
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
 
   const load = () => {
@@ -31,21 +32,29 @@ export default function AdminPayments() {
     load();
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setSearch(searchInput.trim());
+  };
+
   const filtered = payments.filter((p) =>
-    search ? String(p.payment_id).includes(search.trim()) : true
+    search ? String(p.payment_id).includes(search) : true
   );
 
   return (
     <DashboardLayout title="Verify Payments" links={links}>
-      <div className="relative mb-5 max-w-sm">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted pointer-events-none" size={16} />
-        <input
-          className="input-field !pl-10"
-          placeholder="Search by Payment ID..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </div>
+      <form onSubmit={handleSearch} className="flex gap-2 mb-5 max-w-md">
+        <div className="relative flex-1">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted pointer-events-none" size={16} />
+          <input
+            className="input-field !pl-10"
+            placeholder="Search by Payment ID..."
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+          />
+        </div>
+        <button type="submit" className="btn-primary !px-5 !py-2.5 text-sm">Search</button>
+      </form>
 
       <div className="card overflow-hidden">
         <div className="overflow-x-auto">
