@@ -19,7 +19,7 @@ const links = [
 export default function AdminBookings() {
   const [bookings, setBookings] = useState([]);
   const [searchInput, setSearchInput] = useState('');
-  const [search, setSearch] = useState('');
+  const [exactMode, setExactMode] = useState(false);
 
   const load = () => {
     api.get('/admin/bookings').then((res) => setBookings(res.data.bookings));
@@ -27,14 +27,21 @@ export default function AdminBookings() {
 
   useEffect(load, []);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    setSearch(searchInput.trim());
+  const handleChange = (e) => {
+    setSearchInput(e.target.value);
+    setExactMode(false);
   };
 
-  const filtered = bookings.filter((b) =>
-    search ? String(b.booking_id).includes(search) : true
-  );
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setExactMode(true);
+  };
+
+  const filtered = bookings.filter((b) => {
+    if (!searchInput.trim()) return true;
+    const idStr = String(b.booking_id);
+    return exactMode ? idStr === searchInput.trim() : idStr.includes(searchInput.trim());
+  });
 
   return (
     <DashboardLayout title="Monitor Bookings" links={links}>
@@ -45,7 +52,7 @@ export default function AdminBookings() {
             className="input-field !pl-10"
             placeholder="Search by Booking ID..."
             value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
+            onChange={handleChange}
           />
         </div>
         <button type="submit" className="btn-primary !px-5 !py-2.5 text-sm">Search</button>

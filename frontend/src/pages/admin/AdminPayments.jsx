@@ -18,7 +18,7 @@ export default function AdminPayments() {
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchInput, setSearchInput] = useState('');
-  const [search, setSearch] = useState('');
+  const [exactMode, setExactMode] = useState(false);
 
   const load = () => {
     setLoading(true);
@@ -32,14 +32,21 @@ export default function AdminPayments() {
     load();
   };
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    setSearch(searchInput.trim());
+  const handleChange = (e) => {
+    setSearchInput(e.target.value);
+    setExactMode(false);
   };
 
-  const filtered = payments.filter((p) =>
-    search ? String(p.payment_id).includes(search) : true
-  );
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setExactMode(true);
+  };
+
+  const filtered = payments.filter((p) => {
+    if (!searchInput.trim()) return true;
+    const idStr = String(p.payment_id);
+    return exactMode ? idStr === searchInput.trim() : idStr.includes(searchInput.trim());
+  });
 
   return (
     <DashboardLayout title="Verify Payments" links={links}>
@@ -50,7 +57,7 @@ export default function AdminPayments() {
             className="input-field !pl-10"
             placeholder="Search by Payment ID..."
             value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
+            onChange={handleChange}
           />
         </div>
         <button type="submit" className="btn-primary !px-5 !py-2.5 text-sm">Search</button>

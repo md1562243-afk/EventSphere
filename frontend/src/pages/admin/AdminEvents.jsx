@@ -25,7 +25,7 @@ export default function AdminEvents() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchInput, setSearchInput] = useState('');
-  const [search, setSearch] = useState('');
+  const [exactMode, setExactMode] = useState(false);
   const [sort, setSort] = useState('newest');
 
   const load = () => {
@@ -47,13 +47,22 @@ export default function AdminEvents() {
     }
   };
 
+  const handleChange = (e) => {
+    setSearchInput(e.target.value);
+    setExactMode(false);
+  };
+
   const handleSearch = (e) => {
     e.preventDefault();
-    setSearch(searchInput.trim());
+    setExactMode(true);
   };
 
   const filtered = events
-    .filter((e) => (search ? String(e.event_id).includes(search) : true))
+    .filter((e) => {
+      if (!searchInput.trim()) return true;
+      const idStr = String(e.event_id);
+      return exactMode ? idStr === searchInput.trim() : idStr.includes(searchInput.trim());
+    })
     .sort((a, b) => {
       if (sort === 'lowest_price') return Number(a.ticket_price) - Number(b.ticket_price);
       if (sort === 'highest_price') return Number(b.ticket_price) - Number(a.ticket_price);
@@ -74,7 +83,7 @@ export default function AdminEvents() {
               className="input-field !pl-10"
               placeholder="Search by Event ID..."
               value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
+              onChange={handleChange}
             />
           </div>
           <button type="submit" className="btn-primary !px-5 !py-2.5 text-sm">Search</button>
