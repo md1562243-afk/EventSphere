@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Search } from 'lucide-react';
 import DashboardLayout from '../../components/DashboardLayout';
 import StatusBadge from '../../components/StatusBadge';
 import api from '../../api/axios';
@@ -17,6 +18,7 @@ const links = [
 
 export default function AdminBookings() {
   const [bookings, setBookings] = useState([]);
+  const [search, setSearch] = useState('');
 
   const load = () => {
     api.get('/admin/bookings').then((res) => setBookings(res.data.bookings));
@@ -24,8 +26,22 @@ export default function AdminBookings() {
 
   useEffect(load, []);
 
+  const filtered = bookings.filter((b) =>
+    search ? String(b.booking_id).includes(search.trim()) : true
+  );
+
   return (
     <DashboardLayout title="Monitor Bookings" links={links}>
+      <div className="relative mb-5 max-w-sm">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted pointer-events-none" size={16} />
+        <input
+          className="input-field !pl-10"
+          placeholder="Search by Booking ID..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
+
       <div className="card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -41,7 +57,7 @@ export default function AdminBookings() {
               </tr>
             </thead>
             <tbody>
-              {bookings.map((b) => (
+              {filtered.map((b) => (
                 <tr key={b.booking_id} className="border-t border-divider">
                   <td className="py-3 px-4 text-body">{b.booking_id}</td>
                   <td className="py-3 px-4">{b.event_date}</td>
@@ -52,8 +68,8 @@ export default function AdminBookings() {
                   <td className="py-3 px-4">{b.user_id}</td>
                 </tr>
               ))}
-              {bookings.length === 0 && (
-                <tr><td colSpan={7} className="py-8 text-center text-body">No bookings yet.</td></tr>
+              {filtered.length === 0 && (
+                <tr><td colSpan={7} className="py-8 text-center text-body">No bookings found.</td></tr>
               )}
             </tbody>
           </table>

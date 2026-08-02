@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Search } from 'lucide-react';
 import DashboardLayout from '../../components/DashboardLayout';
 import StatusBadge from '../../components/StatusBadge';
 import api from '../../api/axios';
@@ -14,9 +15,17 @@ const links = [
   { to: '/admin/profile', label: 'Profile' }
 ];
 
+const SORT_OPTIONS = [
+  { value: 'newest', label: 'Newest' },
+  { value: 'lowest_price', label: 'Lowest Price' },
+  { value: 'highest_price', label: 'Highest Price' }
+];
+
 export default function AdminEvents() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [sort, setSort] = useState('newest');
 
   const load = () => {
     setLoading(true);
@@ -37,11 +46,45 @@ export default function AdminEvents() {
     }
   };
 
+  const filtered = events
+    .filter((e) => (search ? String(e.event_id).includes(search.trim()) : true))
+    .sort((a, b) => {
+      if (sort === 'lowest_price') return Number(a.ticket_price) - Number(b.ticket_price);
+      if (sort === 'highest_price') return Number(b.ticket_price) - Number(a.ticket_price);
+      return b.event_id - a.event_id; // newest
+    });
+
   return (
     <DashboardLayout title="Supervise Events" links={links}>
       <p className="text-sm text-body mb-5">
         Approving an event makes it visible on Browse — as "What We Offer" if it's a reusable template, or "Custom Requests" if it's tied to one specific booking.
       </p>
+
+      <div className="flex flex-col sm:flex-row gap-3 mb-5">
+        <div className="relative flex-1">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted pointer-events-none" size={16} />
+          <input
+            className="input-field !pl-10"
+            placeholder="Search by Event ID..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+        <div className="flex gap-2">
+          {SORT_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() => setSort(opt.value)}
+              className={`text-xs font-semibold rounded-full px-3.5 py-2 transition duration-250 ${
+                sort === opt.value ? 'bg-primary text-white' : 'bg-searchbg text-body hover:bg-primary/10'
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div className="card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -57,7 +100,7 @@ export default function AdminEvents() {
               </tr>
             </thead>
             <tbody>
-              {events.map((e) => (
+              {filtered.map((e) => (
                 <tr key={e.event_id} className="border-t border-divider">
                   <td className="py-3 px-4 text-body">{e.event_id}</td>
                   <td className="py-3 px-4 font-medium text-heading">{e.event_name}</td>
@@ -75,8 +118,8 @@ export default function AdminEvents() {
                   </td>
                 </tr>
               ))}
-              {!loading && events.length === 0 && (
-                <tr><td colSpan={7} className="py-8 text-center text-body">No events yet.</td></tr>
+              {!loading && filtered.length === 0 && (
+                <tr><td colSpan={7} className="py-8 text-center text-body">No events found.</td></tr>
               )}
             </tbody>
           </table>

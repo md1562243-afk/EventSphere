@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Search } from 'lucide-react';
 import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
 
@@ -16,6 +17,7 @@ const links = [
 export default function AdminPayments() {
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
 
   const load = () => {
     setLoading(true);
@@ -29,8 +31,22 @@ export default function AdminPayments() {
     load();
   };
 
+  const filtered = payments.filter((p) =>
+    search ? String(p.payment_id).includes(search.trim()) : true
+  );
+
   return (
     <DashboardLayout title="Verify Payments" links={links}>
+      <div className="relative mb-5 max-w-sm">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted pointer-events-none" size={16} />
+        <input
+          className="input-field !pl-10"
+          placeholder="Search by Payment ID..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
+
       <div className="card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -44,7 +60,7 @@ export default function AdminPayments() {
               </tr>
             </thead>
             <tbody>
-              {payments.map((p) => (
+              {filtered.map((p) => (
                 <tr key={p.payment_id} className="border-t border-divider">
                   <td className="py-3 px-4 text-body">{p.payment_id}</td>
                   <td className="py-3 px-4">{p.payment_method}</td>
@@ -59,8 +75,8 @@ export default function AdminPayments() {
                   </td>
                 </tr>
               ))}
-              {!loading && payments.length === 0 && (
-                <tr><td colSpan={5} className="py-8 text-center text-body">No payments yet.</td></tr>
+              {!loading && filtered.length === 0 && (
+                <tr><td colSpan={5} className="py-8 text-center text-body">No payments found.</td></tr>
               )}
             </tbody>
           </table>
