@@ -56,7 +56,11 @@ const Booking = {
   },
 
   async setStatus(booking_id, booking_status, admin_id) {
-    await pool.query('UPDATE Booking SET booking_status = ?, admin_id = ? WHERE booking_id = ?', [booking_status, admin_id, booking_id]);
+    if (admin_id) {
+      await pool.query('UPDATE Booking SET booking_status = ?, admin_id = ? WHERE booking_id = ?', [booking_status, admin_id, booking_id]);
+    } else {
+      await pool.query('UPDATE Booking SET booking_status = ? WHERE booking_id = ?', [booking_status, booking_id]);
+    }
   },
 
   async assignEvent(booking_id, event_id) {
