@@ -138,8 +138,10 @@ exports.cancel = async (req, res, next) => {
     if (booking.user_id !== req.auth.user_id) {
       return res.status(403).json({ success: false, message: 'You can only cancel your own bookings' });
     }
-    if (new Date(booking.event_date) < new Date()) {
-      return res.status(400).json({ success: false, message: 'Cannot cancel a booking after the event date has passed' });
+
+    const eventDateTime = new Date(`${booking.event_date}T${booking.event_time}`);
+    if (eventDateTime < new Date()) {
+      return res.status(400).json({ success: false, message: 'Cannot cancel a booking after the event time has passed' });
     }
 
     await Booking.setStatus(req.params.id, 'Cancelled');

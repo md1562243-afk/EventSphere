@@ -11,6 +11,11 @@ const links = [
   { to: '/user/profile', label: 'Profile' }
 ];
 
+function isFutureEvent(dateStr, timeStr) {
+  const eventDateTime = new Date(`${dateStr}T${timeStr}`);
+  return eventDateTime > new Date();
+}
+
 export default function UserBookings() {
   const [bookings, setBookings] = useState([]);
 
@@ -52,7 +57,7 @@ export default function UserBookings() {
                   <td className="py-3 px-4"><StatusBadge status={b.booking_status} /></td>
                   <td className="py-3 px-4">{b.event_id ? b.event_id : '—'}</td>
                   <td className="py-3 px-4">
-                    {(b.booking_status === 'Pending' || b.booking_status === 'Confirmed') && (
+                    {(b.booking_status === 'Pending' || b.booking_status === 'Confirmed') && isFutureEvent(b.event_date, b.event_time) && (
                       <button onClick={() => cancel(b.booking_id)} className="text-errorc text-xs font-semibold hover:underline">
                         Cancel
                       </button>
